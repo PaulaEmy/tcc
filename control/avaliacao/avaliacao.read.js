@@ -1,10 +1,10 @@
-const Curso = require("../models/Cursos");
+const Avaliacao = require("../../models/Avaliacao");
 module.exports = function (request, response, banco) {
-  console.log("GET: /cursos");
+  console.log("GET: /avaliacao");
 
-  const curso = new Curso(banco);
+  const avaliacao = new Avaliacao(banco);
 
-  curso
+  avaliacao
     .read()
     .then((respostaPromise) => {
       const resposta = {

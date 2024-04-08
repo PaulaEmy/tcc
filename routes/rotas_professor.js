@@ -1,9 +1,9 @@
 const { request, response } = require("express");
 const Professor = require("../models/Professor");
-const controle_create = require("../control/professor.create");
-const controle_read = require("../control/professor.read");
-const controle_update = require("../control/professor.update");
-const controle_delete = require("../control/professor.delete");
+const controle_create = require("../control/professor/professor.create");
+const controle_read = require("../control/professor/professor.read");
+const controle_update = require("../control/professor/professor.update");
+const controle_delete = require("../control/professor/professor.delete");
 
 module.exports = function (app, banco) {
   app.post("/professor", (request, response) => {

@@ -1,12 +1,12 @@
-const Professor = require("../models/Professor");
+const AlunoGrupo = require("../../models/AlunoGrupo");
 
 module.exports = function (request, response, banco) {
-    console.log("DELETE: /professor");
-  const p_registro = request.params.registro;
+  console.log("DELETE: /aluno");
+  const p_matricula = request.params.matricula;
 
-  const professor = new Professor(banco);
-  professor._registro = p_registro;
-  professor
+  const alunogrupo = new AlunoGrupo(banco);
+  alunogrupo._matricula = p_matricula;
+  alunogrupo
     .delete()
     .then(() => {
       const resposta = {
@@ -14,7 +14,7 @@ module.exports = function (request, response, banco) {
         msg: "Deletado com sucesso!!",
         codigo: "004",
         dados: {
-          registro: p_registro,
+          matricula: p_matricula,
         },
       };
       response.status(200).json(resposta);

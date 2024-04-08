@@ -1,4 +1,4 @@
-const Professor = require("../models/Professor");
+const Professor = require("../../models/Professor");
 
 module.exports = function (request, response, banco) {
   console.log("PUT: /professor");

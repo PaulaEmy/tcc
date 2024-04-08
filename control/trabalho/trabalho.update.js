@@ -1,38 +1,39 @@
-const Trabalho = require("../models/Trabalho");
+const Trabalho = require("../../models/Trabalho");
 
 module.exports = function (request, response, banco) {
-  console.log(request.body);
+  console.log("PUT: /trabalho");
   const p_nomeTrabalho = request.body.nomeTrabalho;
+  const p_idTrabalho = request.params.idTrabalho;
   const p_resumo = request.body.resumo;
   const p_Curso_idCurso = request.body.Curso_idCurso;
 
-  if (p_nomeTrabalho == "" || p_resumo == "" || p_Curso_idCurso == "") {
+  if (p_nomeTrabalho === "" || p_resumo === "" || p_Curso_idCurso === "") {
     const resposta = {
       status: false,
       msg: "Por favor preencha todos os campos",
       codigo: "001",
       dados: {},
     };
-
     response.status(200).send(resposta);
   } else {
     const trabalho = new Trabalho(banco);
+    trabalho._idTrabalho = p_idTrabalho;
     trabalho._nomeTrabalho = p_nomeTrabalho;
     trabalho._resumo = p_resumo;
-    trabalho._curso.idCurso = p_Curso_idCurso;
+    trabalho._Curso_idCurso = p_Curso_idCurso;
 
     trabalho
-      .create()
-      .then((respostaPromise) => {
+      .update()
+      .then(() => {
         const resposta = {
-          status: false,
-          msg: "Cadastrado com sucesso!",
+          status: true,
+          msg: "Atualizado com sucesso!!",
           codigo: "002",
           dados: {
-            idTrabalho: respostaPromise.InsertId,
+            idTrabalho: p_idTrabalho,
             nomeTrabalho: p_nomeTrabalho,
             resumo: p_resumo,
-            curso: p_Curso_idCurso,
+            Curso_idCurso: p_Curso_idCurso,
           },
         };
         response.status(200).send(resposta);
@@ -40,11 +41,10 @@ module.exports = function (request, response, banco) {
       .catch((erro) => {
         const resposta = {
           status: false,
-          msg: "Ocorreu um erro!",
+          msg: "Erro ao atualizar!",
           codigo: "003",
-          dados: erro,
+          dados: {},
         };
-        console.log(erro);
         response.status(200).send(resposta);
       });
   }

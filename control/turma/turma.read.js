@@ -1,28 +1,24 @@
-const Curso = require("../models/Cursos");
+const Turma = require("../../models/Turma");
 module.exports = function (request, response, banco) {
-  console.log("DELETE: /cursos");
+  console.log("GET: /turmas");
 
-  const p_idCurso = request.params.idCurso;
+  const turma = new Turma(banco);
 
-  const curso = new Curso(banco);
-  curso._idCurso = p_idCurso;
-  curso
-    .delete()
+  turma
+    .read()
     .then((respostaPromise) => {
       const resposta = {
         status: false,
-        msg: "Deletado com sucesso!!",
-        codigo: "004",
-        dados: {
-          idCurso: p_idCurso,
-        },
+        msg: "Sucesso",
+        codigo: "002",
+        dados: respostaPromise,
       };
       response.status(200).send(resposta);
     })
     .catch((erro) => {
       const resposta = {
         status: false,
-        msg: "Erro ao deletar!",
+        msg: "Erro ao ler!",
         codigo: "003",
         dados: {},
       };

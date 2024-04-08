@@ -1,4 +1,4 @@
-const Curso = require("../models/Cursos");
+const Curso = require("../../models/Cursos");
 module.exports = function (request, response, banco) {
   console.log("PUT: /cursos");
 

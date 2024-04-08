@@ -1,24 +1,21 @@
-const Professor = require("../models/Professor");
+const Turma = require("../../models/Turma");
 module.exports = function (request, response, banco) {
-  console.log("POST: /professor");
-  const p_nome = request.body.nome;
-  const p_email = request.body.email;
-  const p_senha = request.body.senha;
+  console.log("POST: /turmas");
 
-  if (p_nome == "" || p_email == "" || p_senha == "") {
+  const p_nomeTurma = request.body.nomeTurma;
+
+  if (p_nomeTurma == "") {
     const resposta = {
       status: false,
-      msg: "Por favor preencha todos os campos",
+      msg: "O nome da turma não pode ser vazio!!",
       codigo: "001",
       dados: {},
     };
     response.status(200).send(resposta);
   } else {
-    const professor = new Professor(banco);
-    professor._nome = p_nome;
-    professor._email = p_email;
-    professor._senha = p_senha;
-    professor
+    const turma = new Turma(banco);
+    turma._nomeTurma = p_nomeTurma;
+    turma
       .create()
       .then((respostaPromise) => {
         const resposta = {
@@ -26,10 +23,8 @@ module.exports = function (request, response, banco) {
           msg: "Cadastrado com sucesso!!",
           codigo: "002",
           dados: {
-            idCurso: respostaPromise.insertId,
-            nome: p_nome,
-            email: p_email,
-            senha: p_senha,
+            idturma: respostaPromise.insertId,
+            nomeTurma: p_nomeTurma,
           },
         };
         response.status(200).send(resposta);

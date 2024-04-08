@@ -5,6 +5,9 @@ const mysql = require("mysql");
 const rotas_cursos = require("./routes/rotas_cursos");
 const rotas_professor = require("./routes/rotas_professor");
 const rotas_trabalho = require("./routes/rotas_trabalho");
+const rotas_turmas = require("./routes/rotas_turmas");
+const rotas_avaliacao = require("./routes/rotas_avaliacao");
+const rotas_alunogrupo = require("./routes/rotas_alunogrupo");
 
 app.use(express.json());
 app.use(express.static("js"));
@@ -23,9 +26,11 @@ const banco = mysql.createPool({
   database: "FeiraTecnica",
 });
 
-rotas_cursos(app, banco);
+rotas_alunogrupo(app, banco), rotas_cursos(app, banco);
 rotas_professor(app, banco);
 rotas_trabalho(app, banco),
+  rotas_turmas(app, banco),
+  rotas_avaliacao(app, banco),
   app.listen(porta, function () {
     console.log("Servidor rodando!: " + porta);
     console.log(">> " + host);

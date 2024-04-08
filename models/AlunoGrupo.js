@@ -1,34 +1,31 @@
-module.exports = class Trabalho {
+module.exports = class AlunoGrupo {
   constructor(banco) {
     this._banco = banco;
-    this._idTrabalho;
-    this._nomeTrabalho;
-    this._resumo;
-    this._curso = {
-      idCurso: null,
-      nomeCurso: null,
+    this._matricula;
+    this._nomeAluno;
+    this._turma = {
+      idTurma: null,
     };
-    this._professor = {
-      registro: -1,
-      nome: "",
+    this._trabalho = {
+      idTrabalho: null,
     };
   }
 
   async create() {
     const operacao = new Promise((resolve, reject) => {
-      const nomeTrabalho = this._nomeTrabalho;
-      const resumo = this._resumo;
-      const Curso_idCurso = this._curso.idCurso;
-      const professor_registro = this._professor.registro;
+      const matricula = this._matricula;
+      const nomeAluno = this._nomeAluno;
+      const turma_idTurma = this._turma.idTurma;
+      const trabalho_idTrabalho = this._trabalho.idTrabalho;
       const parametros = [
-        nomeTrabalho,
-        resumo,
-        Curso_idCurso,
-        professor_registro,
+        matricula,
+        nomeAluno,
+        turma_idTurma,
+        trabalho_idTrabalho,
       ];
       console.log(parametros);
       const sql =
-        "INSERT INTO trabalho (nomeTrabalho, resumo, Curso_idCurso, professor_registro) VALUES (?, ?, ?, ?)";
+        "INSERT INTO alunogrupo (matricula, nomeAluno, turma_idTurma, trabalho_idTrabalho) VALUES (?, ?, ?, ?)";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);
@@ -44,7 +41,7 @@ module.exports = class Trabalho {
   async read() {
     const operacao = new Promise((resolve, reject) => {
       const parametros = [];
-      const sql = "select * from trabalho order by idTrabalho;";
+      const sql = "select * from alunogrupo order by nomeAluno;";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);
@@ -59,14 +56,14 @@ module.exports = class Trabalho {
 
   async update() {
     const operacao = new Promise((resolve, reject) => {
-      const idTrabalho = this._idTrabalho;
-      const nomeTrabalho = this._nomeTrabalho;
-      const resumo = this._resumo;
-
-      const parametros = [nomeTrabalho, resumo, idTrabalho];
+      const matricula = this._matricula;
+      const nomeAluno = this._nomeAluno;
+      const turma = this._turma_idTurma;
+      const trabalho = this._trabalho_idTrabalho;
+      const parametros = [nomeAluno, turma, trabalho, matricula];
       console.log(parametros);
       const sql =
-        "update trabalho set nomeTrabalho = ?, resumo = ? where idTrabalho = ?";
+        "update alunogrupo set nomeAluno = ?, turma_idTurma = ?, trabalho_idTrabalho = ? where matricula = ?";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);
@@ -81,10 +78,10 @@ module.exports = class Trabalho {
 
   async delete() {
     const operacao = new Promise((resolve, reject) => {
-      const idTrabalho = this._idTrabalho;
+      const matricula = this._matricula;
 
-      const parametros = [idTrabalho];
-      const sql = "delete from trabalho where idTrabalho = ?";
+      const parametros = [matricula];
+      const sql = "delete from alunogrupo where matricula = ?";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);
@@ -105,43 +102,35 @@ module.exports = class Trabalho {
     return this._banco;
   }
 
-  set _idTrabalho(value) {
-    this._idTrabalhoValue = value;
+  set _matricula(value) {
+    this._matriculaValue = value;
   }
 
-  get _idTrabalho() {
-    return this._idTrabalhoValue;
+  get _matricula() {
+    return this._matriculaValue;
   }
 
-  set _nomeTrabalho(value) {
-    this._nomeTrabalhoValue = value;
+  set _nomeAluno(value) {
+    this._nomeAlunoValue = value;
   }
 
-  get _nomeTrabalho() {
-    return this._nomeTrabalhoValue;
+  get _nomeAluno() {
+    return this._nomeAlunoValue;
   }
 
-  set _resumo(value) {
-    this._resumoValue = value;
+  set _turma(value) {
+    this._turma_idTurma = value;
   }
 
-  get _resumo() {
-    return this._resumoValue;
+  get _turma() {
+    return this._turma_idTurma;
   }
 
-  set _curso(value) {
-    this._Curso_idCursoValue = value;
+  set _trabalho_idTrabalho(value) {
+    this._trabalho_idTrabalhoValue = value;
   }
 
-  get _curso() {
-    return this._Curso_idCursoValue;
-  }
-
-  set _professor(value) {
-    this._Professor_registro = value;
-  }
-
-  get _professor() {
-    return this._Professor_registro;
+  get _trabalho_idTrabalho() {
+    return this._trabalho_idTrabalhoValue;
   }
 };

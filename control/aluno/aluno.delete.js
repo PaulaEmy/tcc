@@ -1,12 +1,12 @@
-const AlunoGrupo = require("../../models/AlunoGrupo");
+const Aluno = require("../../models/Aluno");
 
 module.exports = function (request, response, banco) {
   console.log("DELETE: /aluno");
   const p_matricula = request.params.matricula;
 
-  const alunogrupo = new AlunoGrupo(banco);
-  alunogrupo._matricula = p_matricula;
-  alunogrupo
+  const aluno = new Aluno(banco);
+  aluno._matricula = p_matricula;
+  aluno
     .delete()
     .then(() => {
       const resposta = {

@@ -6,7 +6,6 @@ const controle_update = require("../control/turma/turma.update");
 const controle_delete = require("../control/turma/turma.delete");
 
 module.exports = function (app, banco) {
-  console.log("Criando rotas /turma");
   app.post("/turma", (request, response) => {
     controle_create(request, response, banco);
   });

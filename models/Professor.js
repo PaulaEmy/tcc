@@ -10,11 +10,12 @@ module.exports = class Professor {
   async create() {
     const operacao = new Promise((resolve, reject) => {
       const nome = this._nome;
+      const registro = this._registro;
       const email = this._email;
       const senha = this._senha;
-      const parametros = [nome, email, senha];
+      const parametros = [registro, nome, email, senha];
       const sql =
-        "insert into professor (nome, email, senha) values (?, ?, ?);";
+        "insert into professor (registro, nome, email, senha) values (?, ?, ?, md5(?));";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);

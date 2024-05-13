@@ -1,21 +1,21 @@
 const { request, response } = require("express");
 const AlunoGrupo = require("../models/AlunoGrupo");
-const controle_create = require("../control/aluno/aluno.create");
-const controle_read = require("../control/aluno/aluno.read");
-const controle_update = require("../control/aluno/aluno.update");
-const controle_delete = require("../control/aluno/aluno.delete");
+const controle_create = require("../control/aluno_grupo/aluno_grupo.create");
+const controle_read = require("../control/aluno_grupo/aluno_grupo.read");
+const controle_update = require("../control/aluno_grupo/aluno_grupo.update");
+const controle_delete = require("../control/aluno_grupo/aluno_grupo.delete");
 
 module.exports = function (app, banco) {
-  app.post("/aluno", (request, response) => {
+  app.post("/alunogrupo", (request, response) => {
     controle_create(request, response, banco);
   });
-  app.get("/aluno", (request, response) => {
+  app.get("/alunogrupo", (request, response) => {
     controle_read(request, response, banco);
   });
-  app.put("/aluno/:matricula", (request, response) => {
+  app.put("/alunogrupo/:aluno_matricula", (request, response) => {
     controle_update(request, response, banco);
   });
-  app.delete("/aluno/:matricula", (request, response) => {
+  app.delete("/alunogrupo/:aluno_matricula", (request, response) => {
     controle_delete(request, response, banco);
   });
 };

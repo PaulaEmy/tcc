@@ -5,6 +5,45 @@ module.exports = class Cursos {
     this._nomeCursoValue = null;
   }
 
+  async obterIdCursoPorNome(nomeCurso) {
+    const operacao = new Promise((resolve, reject) => {
+      const parametros = [nomeCurso];
+      console.log(parametros);
+      const sql = "SELECT idCurso FROM curso WHERE nomeCurso = ?";
+      this._banco.query(sql, parametros, function (erro, resultados) {
+        if (erro) {
+          console.log(erro);
+          reject(erro);
+        } else {
+          if (resultados.length > 0) {
+            resolve(resultados[0].idCurso);
+          } else {
+            resolve(null); // Retorna null se o curso não for encontrada
+          }
+          console.log(resultados);
+        }
+      });
+    });
+    return operacao;
+  }
+
+  static async exists(banco, nomeCurso) {
+    try {
+      const query = "SELECT COUNT(*) AS count FROM curso WHERE nomeCurso = ?";
+      const result = await banco.query(query, [nomeCurso]);
+
+      if (result && result[0] && result[0].count !== undefined) {
+        return result[0].count > 0;
+      } else {
+        // Se não houver resultados ou se a contagem for indefinida, retorna false
+        return false;
+      }
+    } catch (error) {
+      console.error("Erro ao verificar a existência do curso:", error);
+      return false;
+    }
+  }
+
   async create() {
     const operacao = new Promise((resolve, reject) => {
       const nome = this._nomeCursoValue;

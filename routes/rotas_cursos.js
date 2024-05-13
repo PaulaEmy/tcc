@@ -6,7 +6,6 @@ const controle_update = require("../control/curso/curso.update");
 const controle_delete = require("../control/curso/curso.delete");
 
 module.exports = function (app, banco) {
-  console.log("Criando rotas /cursos");
   app.post("/cursos", (request, response) => {
     controle_create(request, response, banco);
   });

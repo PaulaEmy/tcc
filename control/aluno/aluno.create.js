@@ -1,16 +1,25 @@
-const AlunoGrupo = require("../../models/AlunoGrupo");
-module.exports = function (request, response, banco) {
+const Aluno = require("../../models/Aluno");
+const Turma = require("../../models/Turma");
+const Curso = require("../../models/Cursos");
+
+module.exports = async function (request, response, banco) {
   console.log("POST: /aluno");
-  const p_nomeAluno = request.body.nomeAluno;
   const p_matricula = request.body.matricula;
-  const p_turma_idTurma = request.body.turma_idTurma;
-  const p_trabalho_idTrabalho = request.body.trabalho_idTrabalho;
+  const p_nome = request.body.nome;
+  const p_email = request.body.email;
+  const p_senha = request.body.senha;
+  const p_nascimento = request.body.nascimento;
+  const p_turma_nome = request.body.nomeTurma;
+  const p_curso_nome = request.body.nomeCurso;
 
   if (
-    p_nomeAluno == "" ||
+    p_nome == "" ||
+    p_email == "" ||
+    p_senha == "" ||
+    p_nascimento == "" ||
+    p_turma_nome == "" ||
     p_matricula == "" ||
-    p_turma_idTurma == "" ||
-    p_trabalho_idTrabalho == ""
+    p_curso_nome == ""
   ) {
     const resposta = {
       status: false,
@@ -19,37 +28,61 @@ module.exports = function (request, response, banco) {
       dados: {},
     };
     response.status(200).send(resposta);
-  } else {
-    const alunogrupo = new AlunoGrupo(banco);
-    alunogrupo._nomeAluno = p_nomeAluno;
-    alunogrupo._matricula = p_matricula;
-    alunogrupo._turma.idTurma = p_turma_idTurma;
-    alunogrupo._trabalho.idTrabalho = p_trabalho_idTrabalho;
-    alunogrupo
-      .create()
-      .then((respostaPromise) => {
-        const resposta = {
-          status: false,
-          msg: "Cadastrado com sucesso!!",
-          codigo: "002",
-          dados: {
-            nomeAluno: p_nomeAluno,
-            matricula: p_matricula,
-            turma_idTurma: p_turma_idTurma,
-            trabalho_idTrabalho: p_trabalho_idTrabalho,
-          },
-        };
-        response.status(200).send(resposta);
-      })
-      .catch((erro) => {
-        const resposta = {
-          status: false,
-          msg: "Erro ao cadastrar!",
-          codigo: "003",
-          dados: {},
-        };
-        console.log(erro);
-        response.status(200).send(resposta);
-      });
+    return;
+  }
+
+  // Obtendo o ID da turma pelo nome
+  try {
+    const turma = new Turma(banco);
+    const idTurma = await turma.obterIdTurmaPorNome(p_turma_nome);
+
+    const curso = new Curso(banco);
+    const idCurso = await curso.obterIdCursoPorNome(p_curso_nome);
+
+    console.log(idTurma);
+    if (!idTurma) {
+      throw new Error("Turma não encontrada");
+    }
+
+    if (!idCurso) {
+      throw new Error("Curso não encontrada");
+    }
+    // Criando objeto Aluno com os IDs da turma e do curso obtidos
+    const aluno = new Aluno(banco);
+    aluno._matricula = p_matricula;
+    aluno._nome = p_nome;
+    aluno._email = p_email;
+    aluno._senha = p_senha;
+    aluno._nascimento = p_nascimento;
+    aluno._turma.idTurma = idTurma;
+    aluno._curso.idCurso = idCurso;
+
+    // Criando o aluno no banco de dados
+    const respostaPromise = await aluno.create();
+
+    const resposta = {
+      status: true,
+      msg: "Cadastrado com sucesso!!",
+      codigo: "002",
+      dados: {
+        matricula: p_matricula,
+        nome: p_nome,
+        email: p_email,
+        nascimento: p_nascimento,
+        senha: p_senha,
+        turma: idTurma,
+        curso: idCurso,
+      },
+    };
+    response.status(200).send(resposta);
+  } catch (erro) {
+    const resposta = {
+      status: false,
+      msg: "Erro ao cadastrar!",
+      codigo: "003",
+      dados: {},
+    };
+    console.log(erro);
+    response.status(200).send(resposta);
   }
 };

@@ -1,9 +1,9 @@
-const AlunoGrupo = require("../../models/AlunoGrupo");
+const Aluno = require("../../models/Aluno");
 module.exports = function (request, response, banco) {
   console.log("GET: /aluno");
-  const alunogrupo = new AlunoGrupo(banco);
+  const aluno = new Aluno(banco);
 
-  alunogrupo
+  aluno
     .read()
     .then((respostaPromise) => {
       const resposta = {

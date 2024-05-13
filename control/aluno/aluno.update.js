@@ -1,17 +1,21 @@
-const AlunoGrupo = require("../../models/AlunoGrupo");
+const Aluno = require("../../models/Aluno");
 
 module.exports = function (request, response, banco) {
   console.log("PUT: /aluno");
-  const p_nomeAluno = request.body.nomeAluno;
+  const p_nome = request.body.nomeAluno;
   const p_matricula = request.params.matricula;
-  const p_turma_idTurma = request.body.turma_idTurma;
-  const p_trabalho_idTrabalho = request.body.trabalho_idTrabalho;
+  const p_email = request.body.email;
+  const p_senha = request.body.senha;
+  const p_turma = request.body.turma_idTurma;
+  const p_curso = request.body.curso_idCurso;
 
   if (
-    p_nomeAluno === "" ||
+    p_nome === "" ||
     p_matricula === "" ||
-    p_turma_idTurma === "" ||
-    p_trabalho_idTrabalho === ""
+    p_email === "" ||
+    p_senha == "" ||
+    p_turma == "" ||
+    p_curso == ""
   ) {
     const resposta = {
       status: false,
@@ -21,13 +25,15 @@ module.exports = function (request, response, banco) {
     };
     response.status(200).send(resposta);
   } else {
-    const alunogrupo = new AlunoGrupo(banco);
-    alunogrupo._nomeAluno = p_nomeAluno;
-    alunogrupo._matricula = p_matricula;
-    alunogrupo._turma_idTurma = p_turma_idTurma;
-    alunogrupo._trabalho_idTrabalho = p_trabalho_idTrabalho;
+    const aluno = new Aluno(banco);
+    aluno._nome = p_nome;
+    aluno._matricula = p_matricula;
+    aluno._email = p_email;
+    aluno._senha = p_senha;
+    aluno._turma = p_turma_idTurma;
+    aluno._curso = p_curso_idCurso;
 
-    alunogrupo
+    aluno
       .update()
       .then(() => {
         const resposta = {
@@ -35,10 +41,13 @@ module.exports = function (request, response, banco) {
           msg: "Atualizado com sucesso!!",
           codigo: "002",
           dados: {
-            nomeAluno: p_nomeAluno,
+            nome: p_nome,
             matricula: p_matricula,
             turma_idTurma: p_turma_idTurma,
-            trabalho_idTrabalho: p_trabalho_idTrabalho,
+            email: p_email,
+            senha: p_senha,
+            turma: p_turma,
+            curso: p_curso,
           },
         };
         response.status(200).send(resposta);

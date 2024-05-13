@@ -6,17 +6,17 @@
 
 ##npm install md5 --save
 
+##npm install csvtojson --save
+
+##npm install multer --save
+
+##npm install csv
+
 =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 
     se for visitante, registro = null
 
 =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 ---
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `feiratecnica`.`curso` (
 `nomeCurso` VARCHAR(45) NULL DEFAULT NULL,
 PRIMARY KEY (`idCurso`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8mb4;
 
 ---
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `feiratecnica`.`professor` (
 `senha` VARCHAR(50) NULL DEFAULT NULL,
 PRIMARY KEY (`registro`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8mb4;
 
 ---
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `feiratecnica`.`trabalho` (
 `nomeTrabalho` VARCHAR(128) NOT NULL,
 `resumo` VARCHAR(256) NULL DEFAULT NULL,
 `Curso_idCurso` INT(11) NOT NULL,
-`professor_registro` INT(11) NULL,
+`professor_registro` INT(11) NULL DEFAULT NULL,
 PRIMARY KEY (`idTrabalho`),
 INDEX `fk_Trabalho_Curso1_idx` (`Curso_idCurso` ASC),
 INDEX `fk_trabalho_professor1_idx` (`professor_registro` ASC),
@@ -95,7 +95,7 @@ REFERENCES `feiratecnica`.`professor` (`registro`)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8mb4;
 
 ---
@@ -105,66 +105,90 @@ DEFAULT CHARACTER SET = utf8mb4;
 ---
 
 CREATE TABLE IF NOT EXISTS `feiratecnica`.`turma` (
-`idturma` INT NOT NULL AUTO_INCREMENT,
-`nomeTurma` VARCHAR(45) NULL,
+`idturma` INT(11) NOT NULL AUTO_INCREMENT,
+`nomeTurma` VARCHAR(45) NULL DEFAULT NULL,
 PRIMARY KEY (`idturma`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8mb4;
+
+---
+
+-- Table `feiratecnica`.`aluno`
+
+---
+
+CREATE TABLE IF NOT EXISTS `feiratecnica`.`aluno` (
+`matricula` INT NOT NULL,
+`nome` VARCHAR(45) NULL,
+`email` VARCHAR(45) NULL,
+`nascimento` VARCHAR(45) NULL,
+`senha` VARCHAR(45) NULL,
+`turma_idturma` INT(11) NOT NULL,
+PRIMARY KEY (`matricula`),
+INDEX `fk_aluno_turma1_idx` (`turma_idturma` ASC),
+CONSTRAINT `fk_aluno_turma1`
+FOREIGN KEY (`turma_idturma`)
+REFERENCES `feiratecnica`.`turma` (`idturma`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 ---
 
--- Table `feiratecnica`.`AlunoGrupo`
+-- Table `feiratecnica`.`alunogrupo`
 
 ---
 
-CREATE TABLE IF NOT EXISTS `feiratecnica`.`AlunoGrupo` (
-`Matricula` INT NOT NULL,
-`nomeAluno` VARCHAR(45) NULL,
-`turma_idturma` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `feiratecnica`.`alunogrupo` (
 `trabalho_idTrabalho` INT(11) NOT NULL,
-PRIMARY KEY (`Matricula`),
-INDEX `fk_AlunoGrupo_turma1_idx` (`turma_idturma` ASC),
+`aluno_matricula` INT NOT NULL,
 INDEX `fk_AlunoGrupo_trabalho1_idx` (`trabalho_idTrabalho` ASC),
-CONSTRAINT `fk_AlunoGrupo_turma1`
-FOREIGN KEY (`turma_idturma`)
-REFERENCES `feiratecnica`.`turma` (`idturma`)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION,
+INDEX `fk_alunogrupo_aluno1_idx` (`aluno_matricula` ASC),
 CONSTRAINT `fk_AlunoGrupo_trabalho1`
 FOREIGN KEY (`trabalho_idTrabalho`)
 REFERENCES `feiratecnica`.`trabalho` (`idTrabalho`)
 ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `fk_alunogrupo_aluno1`
+FOREIGN KEY (`aluno_matricula`)
+REFERENCES `feiratecnica`.`aluno` (`matricula`)
+ON DELETE NO ACTION
 ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 ---
 
--- Table `feiratecnica`.`Avaliacao`
+-- Table `feiratecnica`.`avaliacao`
 
 ---
 
-CREATE TABLE IF NOT EXISTS `feiratecnica`.`Avaliacao` (
-`idAvaliacao` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `feiratecnica`.`avaliacao` (
+`idAvaliacao` INT(11) NOT NULL AUTO_INCREMENT,
 `trabalho_idTrabalho` INT(11) NOT NULL,
-`professor_registro` INT(11) NULL,
-`notaApresentacao` INT NULL,
-`notaRelevancia` INT NULL,
-`notaConhecimento` INT NULL,
-`melhorTrabalho` INT NULL,
-`obs` VARCHAR(100) NULL,
+`professor_registro` INT(11) NULL DEFAULT NULL,
+`notaApresentacao` INT(11) NULL DEFAULT NULL,
+`notaRelevancia` INT(11) NULL DEFAULT NULL,
+`notaConhecimento` INT(11) NULL DEFAULT NULL,
+`melhorTrabalho` INT(11) NULL DEFAULT NULL,
+`obs` VARCHAR(100) NULL DEFAULT NULL,
 PRIMARY KEY (`idAvaliacao`),
 INDEX `fk_Avaliacao_trabalho1_idx` (`trabalho_idTrabalho` ASC),
 INDEX `fk_Avaliacao_professor1_idx` (`professor_registro` ASC),
-CONSTRAINT `fk_Avaliacao_trabalho1`
-FOREIGN KEY (`trabalho_idTrabalho`)
-REFERENCES `feiratecnica`.`trabalho` (`idTrabalho`)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION,
 CONSTRAINT `fk_Avaliacao_professor1`
 FOREIGN KEY (`professor_registro`)
 REFERENCES `feiratecnica`.`professor` (`registro`)
 ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `fk_Avaliacao_trabalho1`
+FOREIGN KEY (`trabalho_idTrabalho`)
+REFERENCES `feiratecnica`.`trabalho` (`idTrabalho`)
+ON DELETE NO ACTION
 ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8mb4;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

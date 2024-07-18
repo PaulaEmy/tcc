@@ -1,67 +1,65 @@
 const Avaliacao = require("../../models/Avaliacao");
-module.exports = function (request, response, banco) {
+const Professor = require("../../models/Professor");
+const Trabalho = require("../../models/Trabalho");
+const JWT = require("../../models/JWT");
+
+module.exports = async function (request, response, banco) {
   console.log("POST: /avaliacao");
-  const p_trabalho_idTrabalho = request.body.idTrabalho;
-  const p_professor_registro = request.body.registro;
+
+  const p_nomeTrabalho = request.body.nomeTrabalho;
+  const p_nomeProfessor = request.body.nomeProfessor;
   const p_notaApresentacao = request.body.notaApresentacao;
   const p_notaRelevancia = request.body.notaRelevancia;
   const p_notaConhecimento = request.body.notaConhecimento;
   const p_melhorTrabalho = request.body.melhorTrabalho;
   const p_obs = request.body.obs;
 
-  if (
-    p_trabalho_idTrabalho == "" ||
-    p_notaApresentacao == "" ||
-    p_notaRelevancia == "" ||
-    p_notaConhecimento == "" ||
-    p_melhorTrabalho == ""
-  ) {
-    const resposta = {
-      status: false,
-      msg: "Por favor preencha todos os campos",
-      codigo: "001",
-      dados: {},
-    };
-    response.status(200).send(resposta);
-  } else {
+  try {
+    const professor = new Professor(banco);
+    const registro = await professor.obterRegistroPorNome(p_nomeProfessor);
+
+    if (!registro) {
+      throw new Error("Professor não encontrado");
+    }
+
+    const trabalho = new Trabalho(banco);
+    const idTrabalho = await trabalho.obterRegistroPorNome(p_nomeTrabalho);
+
+    if (!idTrabalho) {
+      throw new Error("Projeto não encontrado");
+    }
+
     const avaliacao = new Avaliacao(banco);
-    avaliacao._trabalho.idTrabalho = p_trabalho_idTrabalho;
-    avaliacao._professor.registro = p_professor_registro;
+    avaliacao._trabalho = { idTrabalho: idTrabalho };
+    avaliacao._professor = { registro: registro };
+
     avaliacao._notaApresentacao = p_notaApresentacao;
     avaliacao._notaRelevancia = p_notaRelevancia;
     avaliacao._notaConhecimento = p_notaConhecimento;
-    avaliacao._melhorTrabalho = p_melhorTrabalho;
-    avaliacao._obs = p_obs;
 
-    avaliacao
-      .create()
-      .then((respostaPromise) => {
-        const resposta = {
-          status: false,
-          msg: "Cadastrado com sucesso!!",
-          codigo: "002",
-          dados: {
-            idAvaliacao: respostaPromise.insertId,
-            trabalho: p_trabalho_idTrabalho,
-            registro: p_professor_registro,
-            notaApresentacao: p_notaApresentacao,
-            notaRelevancia: p_notaRelevancia,
-            notaConhecimento: p_notaConhecimento,
-            melhorTrabalho: p_melhorTrabalho,
-            obs: p_obs,
-          },
-        };
-        response.status(200).send(resposta);
-      })
-      .catch((erro) => {
-        const resposta = {
-          status: false,
-          msg: "Erro ao cadastrar!",
-          codigo: "003",
-          dados: {},
-        };
-        console.log(erro);
-        response.status(200).send(resposta);
-      });
+    const respostaPromise = await avaliacao.create();
+
+    const resposta = {
+      status: true,
+      msg: "Cadastrado com sucesso!!",
+      codigo: "002",
+      dados: {
+        nomeTrabalho: p_nomeTrabalho,
+        professor: p_nomeProfessor,
+        notaApresentacao: p_notaApresentacao,
+        notaRelevancia: p_notaRelevancia,
+        notaConhecimento: p_notaConhecimento,
+      },
+    };
+    response.status(200).send(resposta);
+  } catch (erro) {
+    console.error("Erro ao cadastrar:", erro);
+    const resposta = {
+      status: false,
+      msg: "Erro ao cadastrar!",
+      codigo: "003",
+      dados: {},
+    };
+    response.status(500).send(resposta);
   }
 };

@@ -3,16 +3,184 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload CSV</title>
+    <title>Cadastro de Professores</title>
+    <link rel="stylesheet" href="./css/cadastrostyle.css" />
   </head>
   <body>
-    <form
-      action="/upload/professor"
-      method="post"
-      enctype="multipart/form-data"
-    >
-      <input type="file" name="csvFile" accept=".csv" />
-      <button type="submit">Enviar</button>
-    </form>
+    <div class="upload-container">
+      <h1>Upload de Arquivo CSV</h1>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="csvFile" accept=".csv" required />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+
+    <div class="table-container">
+      <h2>Lista de Professores</h2>
+      <table id="professorTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable('registro')">Registro</th>
+            <th onclick="sortTable('nome')">Nome</th>
+            <th onclick="sortTable('email')">Email</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      let professors = [];
+
+      function sortTable(key) {
+        professors.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+        displayProfessors(professors);
+      }
+
+      async function fetchProfessors() {
+        try {
+          const response = await fetch("/professores");
+          professors = await response.json();
+          displayProfessors(professors);
+        } catch (error) {
+          console.error("Erro ao buscar professores:", error);
+        }
+      }
+
+      function displayProfessors(professors) {
+        const tableBody = document.querySelector("#professorTable tbody");
+        tableBody.innerHTML = "";
+        professors.forEach((professor) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${professor.registro}</td>
+          <td>${professor.nome}</td>
+          <td>${professor.email}</td>
+          <td>
+            <button onclick="updateProfessor('${professor.registro}')">Atualizar</button>
+            <button onclick="deleteProfessor('${professor.registro}')">Deletar</button>
+          </td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      async function updateProfessor(registro) {
+        const nome = prompt("Digite o novo nome:");
+        const email = prompt("Digite o novo email:");
+
+        if (!nome || !email) {
+          alert("Todos os campos são obrigatórios!");
+          return;
+        }
+
+        const data = { nome, email };
+
+        try {
+          const response = await fetch(`/professor/${registro}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            fetchProfessors();
+          } else {
+            console.error("Erro ao atualizar professor:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar professor:", error);
+        }
+      }
+
+      async function deleteProfessor(registro) {
+        try {
+          const response = await fetch(`/professor/${registro}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            fetchProfessors();
+          } else {
+            console.error("Erro ao deletar professor:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erro ao deletar professor:", error);
+        }
+      }
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const formData = new FormData(this);
+          try {
+            const response = await fetch("/upload/professor", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              fetchProfessors();
+            } else {
+              console.error("Erro no upload:", response.statusText);
+            }
+          } catch (error) {
+            console.error("Erro no upload:", error);
+          }
+        });
+
+      window.onload = fetchProfessors;
+    </script>
   </body>
 </html>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div
+      class="menu-toggle"
+      onclick="toggleMenu()"
+      onmouseenter="cancelCloseMenu()"
+    >
+      ☰
+    </div>
+    <nav class="menu" onmouseleave="closeMenu()">
+      <ul>
+        <li><a href="professor_home.html">HOME</a></li>
+        <li><a href="perfil.html">PERFIL</a></li>
+        <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
+        <li><a href="cadastraraluno.html">ALUNOS</a></li>
+        <li><a href="avaliacao.html">AVALIAÇÃO</a></li>
+        <li><a href="projetos.html">PROJETO</a></li>
+        <li><a href="index.html">LOGOUT</a></li>
+      </ul>
+    </nav>
+  </body>
+</html>
+
+<script>
+  let menuTimeout;
+
+  function toggleMenu() {
+    const menu = document.querySelector(".menu");
+    menu.classList.toggle("open");
+  }
+
+  function closeMenu() {
+    const menu = document.querySelector(".menu");
+    menuTimeout = setTimeout(() => {
+      menu.classList.remove("open");
+    }, 500); // Tempo de espera em milissegundos (500ms) antes de recuar o menu
+  }
+
+  function cancelCloseMenu() {
+    clearTimeout(menuTimeout);
+  }
+</script>

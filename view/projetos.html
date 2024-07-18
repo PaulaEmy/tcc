@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Projetos</title>
+    <link rel="stylesheet" href="./css/projetostyle.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="section">
+        <div>
+          <div id="outro">
+            <h2>Cadastro de Projeto</h2>
+          </div>
+          <form id="cadastro-form">
+            <label for="nomeTrabalho">Nome:</label>
+            <input type="text" id="nomeTrabalho" name="nomeTrabalho" required /><br /><br />
+          
+            <label for="resumo">Resumo:</label>
+            <input type="text" id="resumo" name="resumo" required /><br /><br />
+          
+            <label for="nomeCurso">Curso:</label>
+            <input type="text" id="nomeCurso" name="nomeCurso" required /><br /><br />
+          
+            <label for="nomeProfessor">Professor:</label>
+            <input type="text" id="nomeProfessor" name="nomeProfessor" required /><br /><br />
+          
+            <button type="submit">Cadastrar</button>
+          </form>
+          
+          <script>
+          document.querySelector("#cadastro-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+          
+            const nomeTrabalho = document.querySelector("#nomeTrabalho").value;
+            const resumo = document.querySelector("#resumo").value;
+            const nomeCurso = document.querySelector("#nomeCurso").value;
+            const nomeProfessor = document.querySelector("#nomeProfessor").value;
+          
+            if (!nomeTrabalho || !resumo || !nomeCurso || !nomeProfessor) {
+              alert("Por favor, preencha todos os campos antes de enviar o formulário.");
+              return;
+            }
+          
+            const data = {
+              nomeTrabalho,
+              resumo,
+              nomeCurso,
+              nomeProfessor,
+            };
+          
+            try {
+              const response = await fetch("/trabalho", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              });
+          
+              if (response.ok) {
+                const result = await response.json();
+                alert("Projeto cadastrado com sucesso!");
+                fetchProjetos();
+              } else {
+                alert("Erro ao cadastrar: " + response.statusText);
+              }
+            } catch (error) {
+              console.error("Erro:", error);
+              alert("Erro ao cadastrar: " + error.message);
+            }
+          });
+          </script>
+      <div class="table-container">
+        <h2>Lista de Projetos</h2>
+        <table id="projetoTable">
+          <thead>
+            <tr>
+              <th>Registro</th>
+              <th>Nome</th>
+              <th>Resumo</th>
+              <th>Curso</th>
+              <th>Professor</th>
+              <th>Ações</th>
+
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <script>
+        async function fetchProjetos() {
+          try {
+            const response = await fetch("/trabalhos");
+            const trabalhos = await response.json();
+
+            const tableBody = document.querySelector("#projetoTable tbody");
+            tableBody.innerHTML = ""; // Limpa o conteúdo anterior
+            trabalhos.forEach((trabalho) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                    <td>${trabalho.idTrabalho}</td>
+                    <td>${trabalho.nomeTrabalho}</td>
+                    <td>${trabalho.resumo}</td>
+                    <td>${trabalho.nomeCurso}</td>
+                    <td>${trabalho.nome}</td>
+                    <td>
+            <button onclick="updateProjeto(${trabalho.idTrabalho})">Atualizar</button>
+            <button onclick="deleteProjeto(${trabalho.idTrabalho})">Deletar</button>
+          </td>
+                `;
+              tableBody.appendChild(row);
+            });
+          } catch (error) {
+            console.error("Erro ao buscar projetos:", error);
+          }
+        }
+
+        // Chama a função para buscar e exibir os projetos quando a página carregar
+        window.onload = fetchProjetos;
+      
+        async function updateProjeto(idTrabalho) {
+        const nomeTrabalho = prompt("Digite o novo nome:");
+        const resumo = prompt("Digite o novo resumo:");
+        const nomeCurso = prompt("Digite o novo curso:");
+        const nomeProfessor = prompt("Digite o nome do professor:");
+
+
+        if (!nomeTrabalho || !resumo || !nomeCurso || !nomeProfessor ) {
+          alert("Todos os campos são obrigatórios!");
+          return;
+        }
+
+        const data = {
+          nomeTrabalho: nomeTrabalho,
+          resumo: resumo,
+          nomeCurso: nomeCurso,
+          nomeProfessor: nomeProfessor,
+       
+        };
+
+
+        try {
+          const response = await fetch(`/trabalho/${idTrabalho}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            fetchProjetos();
+          } else {
+            console.error("Erro ao atualizar projeto:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erro ao atualizar projeto:", error);
+        }
+      }
+
+      async function deleteProjeto(idTrabalho) {
+        const response = await fetch(`/trabalho/${idTrabalho}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          fetchProjetos();
+        } else {
+          console.error("Erro ao deletar projeto:", response.statusText);
+        }
+      }
+
+
+      </script>
+
+      <div
+        class="menu-toggle"
+        onclick="toggleMenu()"
+        onmouseenter="cancelCloseMenu()"
+      >
+        ☰
+      </div>
+      <nav class="menu" onmouseleave="closeMenu()">
+        <ul>
+          <li><a href="professor_home.html">HOME</a></li>
+          <li><a href="perfil.html">PERFIL</a></li>
+          <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
+          <li><a href="cadastraraluno.html">ALUNOS</a></li>
+          <li><a href="avaliacao.html">AVALIAÇÃO</a></li>
+          <li><a href="projetos.html">PROJETO</a></li>
+          <li><a href="index.html">LOGOUT</a></li>
+        </ul>
+      </nav>
+
+      <script>
+        let menuTimeout;
+
+        function toggleMenu() {
+          const menu = document.querySelector(".menu");
+          menu.classList.toggle("open");
+        }
+
+        function closeMenu() {
+          const menu = document.querySelector(".menu");
+          menuTimeout = setTimeout(() => {
+            menu.classList.remove("open");
+          }, 500); // Tempo de espera em milissegundos (500ms) antes de recuar o menu
+        }
+
+        function cancelCloseMenu() {
+          clearTimeout(menuTimeout);
+        }
+      </script>
+    </div>
+  </body>
+</html>

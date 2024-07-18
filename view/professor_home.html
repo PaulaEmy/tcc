@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/homestyle.css" />
+    <title>Página Inicial</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <ul>
+          <li><a href="professor_home.html">HOME</a></li>
+          <li><a href="perfil.html">PERFIL</a></li>
+          <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
+          <li><a href="cadastraraluno.html">ALUNOS</a></li>
+          <li><a href="avaliacao.html">AVALIAÇÃO</a></li>
+          <li><a href="projetos.html">PROJETO</a></li>
+          <li><a href="index.html">LOGOUT</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section id="home">
+      <h1>Bem-vindo à Home</h1>
+      <p>Conteúdo da Home.</p>
+    </section>
+
+    <section id="about">
+      <h1>Sobre</h1>
+      <p>Conteúdo sobre a empresa.</p>
+    </section>
+
+    <section id="services">
+      <h1>Serviços</h1>
+      <p>Conteúdo sobre os serviços oferecidos.</p>
+    </section>
+
+    <section id="contact">
+      <h1>Contato</h1>
+      <p>Informações de contato.</p>
+    </section>
+  </body>
+</html>
+
+<script>
+  let menuTimeout;
+
+  function toggleMenu() {
+    const menu = document.querySelector(".menu");
+    menu.classList.toggle("open");
+  }
+
+  function closeMenu() {
+    const menu = document.querySelector(".menu");
+    menuTimeout = setTimeout(() => {
+      menu.classList.remove("open");
+    }, 500); // Tempo de espera em milissegundos (500ms) antes de recuar o menu
+  }
+
+  function cancelCloseMenu() {
+    clearTimeout(menuTimeout);
+  }
+</script>

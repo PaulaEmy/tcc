@@ -28,20 +28,17 @@ module.exports = class Cursos {
   }
 
   static async exists(banco, nomeCurso) {
-    try {
-      const query = "SELECT COUNT(*) AS count FROM curso WHERE nomeCurso = ?";
-      const result = await banco.query(query, [nomeCurso]);
-
-      if (result && result[0] && result[0].count !== undefined) {
-        return result[0].count > 0;
-      } else {
-        // Se não houver resultados ou se a contagem for indefinida, retorna false
-        return false;
-      }
-    } catch (error) {
-      console.error("Erro ao verificar a existência do curso:", error);
-      return false;
-    }
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT COUNT(*) AS count FROM curso WHERE nomeCurso = ?";
+      banco.query(sql, [nomeCurso], (erro, resultados) => {
+        if (erro) {
+          console.error("Erro ao verificar a existência do curso:", erro);
+          reject(erro);
+        } else {
+          resolve(resultados[0].count > 0);
+        }
+      });
+    });
   }
 
   async create() {

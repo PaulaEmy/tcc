@@ -14,6 +14,48 @@ module.exports = class Aluno {
     };
   }
 
+  async login() {
+    const operacao = new Promise((resolve, reject) => {
+      const email = this._email;
+      const senha = this._senha;
+
+      const parametros = [email, senha];
+      //console.log(parametros);
+      const sql =
+        "SELECT COUNT(*)as  qtd, matricula, nome, email, senha, nascimento, turma_idTurma, curso_idCurso FROM aluno  WHERE email= ? AND senha =md5(?)";
+      this._banco.query(sql, parametros, (erro, tuplas) => {
+        if (erro) {
+          console.log(erro);
+          reject(erro);
+        } else {
+          console.log(tuplas);
+          if (tuplas[0].qtd > 0) {
+            const obj = {
+              status: true,
+              dados: {
+                registro: tuplas[0].registro,
+                nome: tuplas[0].nome,
+                email: tuplas[0].email,
+                //senha:senha[0].senha,
+                nascimento: tuplas[0].nascimento,
+                turma: tuplas[0].turma,
+              },
+            };
+
+            resolve(obj);
+          } else {
+            const obj = {
+              status: false,
+            };
+            resolve(obj);
+          }
+        }
+      });
+    });
+
+    return operacao;
+  }
+
   async create() {
     const operacao = new Promise((resolve, reject) => {
       const matricula = this._matricula;
@@ -49,9 +91,22 @@ module.exports = class Aluno {
 
   async read() {
     const operacao = new Promise((resolve, reject) => {
-      const parametros = [];
-      const sql = "select * from aluno order by nome;";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+      const sql = `
+        SELECT 
+          aluno.matricula, 
+          aluno.nome, 
+          aluno.email, 
+          aluno.nascimento, 
+          aluno.turma_idTurma, 
+          aluno.curso_idCurso,
+          turma.nomeTurma AS nomeTurma,
+          curso.nomeCurso AS nomeCurso
+        FROM aluno 
+        LEFT JOIN turma ON aluno.turma_idTurma = turma.idTurma
+        LEFT JOIN curso ON aluno.curso_idCurso = curso.idCurso
+        ORDER BY aluno.nome;
+      `;
+      this._banco.query(sql, [], function (erro, resultados) {
         if (erro) {
           console.log(erro);
           reject(erro);
@@ -64,7 +119,7 @@ module.exports = class Aluno {
   }
 
   async update() {
-    const operacao = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const matricula = this._matricula;
       const nome = this._nome;
       const email = this._email;
@@ -75,7 +130,7 @@ module.exports = class Aluno {
       const parametros = [nome, email, senha, turma, curso, matricula];
       console.log(parametros);
       const sql =
-        "update aluno set nome = ?, email = ?, senha = ?, turma = ?, curso = ? where matricula = ?";
+        "UPDATE aluno SET nome = ?, email = ?, senha = md5(?), turma_idTurma = ?, curso_idCurso = ? WHERE matricula = ?";
       this._banco.query(sql, parametros, function (erro, resultados) {
         if (erro) {
           console.log(erro);
@@ -85,7 +140,6 @@ module.exports = class Aluno {
         }
       });
     });
-    return operacao;
   }
 
   async delete() {

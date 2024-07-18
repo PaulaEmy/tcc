@@ -1,0 +1,39 @@
+/* Reset de estilos padrão */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  display: inline-block;
+  background-color: #173f73; /* Cor de fundo */
+  color: white; /* Cor do texto */
+  text-align: center; /* Alinhamento do texto */
+  padding: 12px 24px; /* Espaçamento interno */
+  text-decoration: none; /* Remover sublinhado de link */
+  font-size: 18px; /* Tamanho da fonte */
+  border-radius: 5px; /* Bordas arredondadas */
+  cursor: pointer; /* Cursor ao passar por cima */
+  margin: 0 10px; /* Margem entre os botões */
+  transition: background-color 0.3s ease; /* Transição suave de cor */
+}
+
+.btn:hover {
+  background-color: #044b8b; /* Cor de fundo ao passar o mouse */
+}

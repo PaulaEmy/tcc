@@ -1,3 +1,4 @@
-registro;nome;email
-1;helio;helio@gmail.com
-2;alberson;alberson@gmail.com
+registro;nome;email;senha
+1;helio;helio@gmail.com;123
+2;alberson;alberson@gmail.com;123
+3;admin;admin@admin;admin

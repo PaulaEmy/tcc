@@ -38,15 +38,18 @@ const banco = mysql.createPool({
   database: "FeiraTecnica",
 });
 
+//###################################################################
+
 // Rota para servir o formulário HTML
 app.get("/", async (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "cadastrarprofessor.html"));
 });
 
 // Configuração do multer para processar uploads de arquivos
 const upload = multer({ storage: multer.memoryStorage() });
 
-//UPLOAD DE PROFESSOR
+//##########PROFESSOR##########
+
 app.post("/upload/professor", upload.single("csvFile"), async (req, res) => {
   if (!req.file) {
     res.status(400).send("Nenhum arquivo enviado.");
@@ -57,9 +60,6 @@ app.post("/upload/professor", upload.single("csvFile"), async (req, res) => {
 
   var linhas = csvBuffer.split("\n");
 
-  // Limpar tabela de professores
-  await limparTabelaProfessor();
-
   // Array para armazenar os objetos JSON
   var objetosJson = [];
   var professoresDiferentes = [];
@@ -67,35 +67,32 @@ app.post("/upload/professor", upload.single("csvFile"), async (req, res) => {
   var jsonFinal = JSON.stringify(objetosJson, null, 2);
 
   // Iterar sobre cada linha (começando da segunda linha, pois a primeira contém os cabeçalhos)
-  for (var i = 1; i < linhas.length; i++) {
-    var valores = linhas[i].split(";"); // Dividir os valores por ponto e vírgula
-    //if (!alunosDiferentes.includes(valores[0])) {
+  for (let i = 1; i < linhas.length; i++) {
+    const valores = linhas[i].split(";"); // Dividir os valores por ponto e vírgula
     professoresDiferentes.push({
       registro: valores[0],
       nome: valores[1],
       email: valores[2],
     });
-    //}
   }
 
-  //##########ALUNOS##########
   console.log(professoresDiferentes);
-  for (i = 0; i < professoresDiferentes.length; i++) {
+  for (let i = 0; i < professoresDiferentes.length; i++) {
     const registro = professoresDiferentes[i].registro;
     const nome = professoresDiferentes[i].nome;
     const email = professoresDiferentes[i].email;
-    const p = new Professor(banco);
-    p._registro = registro;
-    p._nome = nome;
-    p._email = email;
-    p._senha = "UNIVAP2024";
-    await p.create();
+
+    await upsert(
+      "INSERT INTO professor (registro, nome, email) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email)",
+      [registro, nome, email]
+    );
   }
 
   res.status(200).send('{"msg":"Executado com sucesso","status":true}');
 });
 
-//UPLOAD DE ALUNO
+//##########ALUNOS - CURSOS - TURMA##########
+
 app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
   if (!req.file) {
     res.status(400).send("Nenhum arquivo enviado.");
@@ -106,18 +103,6 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
 
   var linhas = csvBuffer.split("\n");
 
-  // Limpar tabela de alunos
-  await limparTabelaAlunos();
-
-  // Limpar a tabela de cursos
-  await limparTabelaCursos();
-
-  // Limpar a tabela de turmas
-  await limparTabelaTurmas();
-
-  // Resetar a contagem automática do ID das tabelas
-  await resetarContagemID();
-
   // Array para armazenar os objetos JSON
   var objetosJson = [];
   var cursosDiferentes = [];
@@ -127,15 +112,14 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
   var jsonFinal = JSON.stringify(objetosJson, null, 2);
 
   // Iterar sobre cada linha (começando da segunda linha, pois a primeira contém os cabeçalhos)
-  for (var i = 1; i < linhas.length; i++) {
-    var valores = linhas[i].split(";"); // Dividir os valores por ponto e vírgula
+  for (let i = 1; i < linhas.length; i++) {
+    const valores = linhas[i].split(";"); // Dividir os valores por ponto e vírgula
     if (!cursosDiferentes.includes(valores[5])) {
       cursosDiferentes.push(valores[5]);
     }
     if (!turmasDiferentes.includes(valores[4])) {
       turmasDiferentes.push(valores[4]);
     }
-    //if (!alunosDiferentes.includes(valores[0])) {
     alunosDiferentes.push({
       matricula: valores[0],
       nome: valores[1],
@@ -144,37 +128,63 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
       turma: valores[4].trim(),
       curso: valores[5].trim(),
     });
-    //}
   }
 
-  //##########CURSOS##########
-  console.log(cursosDiferentes);
-  for (i = 0; i < cursosDiferentes.length; i++) {
+  // Limpar duplicatas nas listas de cursos e turmas
+  cursosDiferentes = [...new Set(cursosDiferentes)];
+  turmasDiferentes = [...new Set(turmasDiferentes)];
+
+  // Upsert para cursos
+  for (let i = 0; i < cursosDiferentes.length; i++) {
     const nomeCurso = cursosDiferentes[i].trim();
-    const cursoExistente = await Curso.exists(banco, nomeCurso);
-    if (!cursoExistente) {
-      const c = new Curso(banco);
-      c._nomeCurso = nomeCurso;
-      await c.create();
-    }
-  }
-  //##########################
-
-  //##########TURMAS##########
-  console.log(turmasDiferentes);
-  for (i = 0; i < turmasDiferentes.length; i++) {
-    const nomeTurma = turmasDiferentes[i];
-    const turmaExistente = await Turma.exists(banco, nomeTurma);
-    if (!turmaExistente) {
-      const t = new Turma(banco);
-      t._nomeTurma = nomeTurma;
-      await t.create();
+    const cursoExists = await cursoJaExiste(nomeCurso);
+    if (!cursoExists) {
+      await upsert("INSERT INTO curso (nomeCurso) VALUES (?)", [nomeCurso]);
     }
   }
 
-  //##########ALUNOS##########
-  console.log(alunosDiferentes);
-  for (i = 0; i < alunosDiferentes.length; i++) {
+  // Upsert para turmas
+  for (let i = 0; i < turmasDiferentes.length; i++) {
+    const nomeTurma = turmasDiferentes[i].trim();
+    const turmaExists = await turmaJaExiste(nomeTurma);
+    if (!turmaExists) {
+      await upsert("INSERT INTO turma (nomeTurma) VALUES (?)", [nomeTurma]);
+    }
+  }
+
+  // Função para verificar se um curso já existe
+  async function cursoJaExiste(nomeCurso) {
+    return new Promise((resolve, reject) => {
+      banco.query(
+        "SELECT 1 FROM curso WHERE nomeCurso = ?",
+        [nomeCurso],
+        (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results.length > 0);
+        }
+      );
+    });
+  }
+
+  // Função para verificar se uma turma já existe
+  async function turmaJaExiste(nomeTurma) {
+    return new Promise((resolve, reject) => {
+      banco.query(
+        "SELECT 1 FROM turma WHERE nomeTurma = ?",
+        [nomeTurma],
+        (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results.length > 0);
+        }
+      );
+    });
+  }
+  // Upsert para alunos
+  for (let i = 0; i < alunosDiferentes.length; i++) {
     const objTurma = new Turma(banco);
     const objCurso = new Curso(banco);
     const idTurma = await objTurma.obterIdTurmaPorNome(
@@ -188,78 +198,26 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
     const nome = alunosDiferentes[i].nome;
     const email = alunosDiferentes[i].email;
     const nascimento = alunosDiferentes[i].nascimento;
-    //const turma = alunosDiferentes[i].turma;
-    //const curso = alunosDiferentes[i].curso;
-    const a = new Aluno(banco);
-    a._matricula = matricula;
-    a._nome = nome;
-    a._email = email;
-    a._nascimento = nascimento;
-    a._senha = nascimento;
-    a._turma.idTurma = idTurma;
-    a._curso.idCurso = idCurso;
-    await a.create();
+
+    await upsert(
+      "INSERT INTO aluno (matricula, nome, email, nascimento, turma_idTurma, curso_idCurso) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email), nascimento = VALUES(nascimento), turma_idTurma = VALUES(turma_idTurma), curso_idCurso = VALUES(curso_idCurso)",
+      [matricula, nome, email, nascimento, idTurma, idCurso]
+    );
   }
 
   res.status(200).send('{"msg":"Executado com sucesso","status":true}');
 });
 
-async function limparTabelaAlunos() {
-  try {
-    const sql = "DELETE FROM aluno";
-    await banco.query(sql);
-    console.log("Tabela de aluno limpa com sucesso.");
-  } catch (error) {
-    console.error("Erro ao limpar tabela de aluno:", error);
-  }
-}
-
-async function limparTabelaProfessor() {
-  try {
-    const sql = "DELETE FROM professor";
-    await banco.query(sql);
-    console.log("Tabela de professor limpa com sucesso.");
-  } catch (error) {
-    console.error("Erro ao limpar tabela de professor:", error);
-  }
-}
-
-async function limparTabelaCursos() {
-  try {
-    const sql = "DELETE FROM curso";
-    await banco.query(sql);
-    console.log("Tabela de cursos limpa com sucesso.");
-  } catch (error) {
-    console.error("Erro ao limpar tabela de cursos:", error);
-  }
-}
-
-async function limparTabelaTurmas() {
-  try {
-    const sql = "DELETE FROM turma";
-    await banco.query(sql);
-    console.log("Tabela de turmas limpa com sucesso.");
-  } catch (error) {
-    console.error("Erro ao limpar tabela de turmas:", error);
-  }
-}
-
-async function resetarContagemID() {
-  try {
-    const sqlCurso = "ALTER TABLE curso AUTO_INCREMENT = 1";
-    await banco.query(sqlCurso);
-    console.log(
-      "Contagem automática do ID da tabela 'curso' resetada com sucesso."
-    );
-
-    const sqlTurma = "ALTER TABLE turma AUTO_INCREMENT = 1";
-    await banco.query(sqlTurma);
-    console.log(
-      "Contagem automática do ID da tabela 'turma' resetada com sucesso."
-    );
-  } catch (error) {
-    console.error("Erro ao resetar contagem automática do ID:", error);
-  }
+async function upsert(query, params) {
+  return new Promise((resolve, reject) => {
+    banco.query(query, params, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+  });
 }
 
 const porta = 80;

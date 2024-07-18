@@ -1,0 +1,130 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #173f73;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 80%;
+  margin-top: 0;
+}
+
+.upload-container,
+.table-container {
+  margin: 20px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+h1,
+h2 {
+  color: #333;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input[type="file"] {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button {
+  background-color: #173f73;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #b4c5e4;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Estilos do botão de toggle do menu */
+.menu-toggle {
+  display: block;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Estilos do menu de navegação oculto */
+.menu {
+  position: fixed;
+  top: 0;
+  left: -250px; /* Inicialmente, o menu está escondido para a esquerda */
+  width: 250px;
+  height: 100%;
+  background-color: #13293d;
+  color: #ffffff;
+  transition: left 0.3s ease; /* Adiciona uma transição suave para animar o menu */
+}
+
+.menu ul {
+  list-style: none;
+  padding: 5;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu li {
+  margin: 10px 0;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Estilos para o menu aberto */
+.menu.open {
+  left: 0;
+}

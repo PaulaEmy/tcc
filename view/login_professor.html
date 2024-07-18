@@ -3,29 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="loginstyle.css" />
+    <link rel="stylesheet" href="./css/loginstyle.css" />
     <title>Login</title>
   </head>
   <body>
     <div class="container">
       <h2>Login</h2>
-      <form action="processar_cadastro.php" method="POST">
+      <form id="login-form">
         <div class="input-group">
           <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" required /><br /><br />
         </div>
         <div class="input-group">
           <label for="senha">Senha:</label>
-          <input
-            type="password"
-            id="password"
-            autocomplete="off"
-            name="senha"
-            required
-          />
+          <input type="password" id="senha" name="senha" required /><br /><br />
         </div>
         <button type="submit">Login</button>
       </form>
     </div>
+
+    <script>
+      function parseJwt(token) {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+
+        return JSON.parse(jsonPayload);
+      }
+
+      const token = localStorage.getItem("token");
+      const professorData = parseJwt(token);
+
+      document
+        .querySelector("#login-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const email = document.querySelector("#email").value;
+          const senha = document.querySelector("#senha").value;
+
+          if (!email || !senha) {
+            alert(
+              "Por favor, preencha todos os campos antes de enviar o formulário."
+            );
+            return;
+          }
+
+          // Faça uma requisição ao servidor para verificar as credenciais do usuário
+          const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, senha }),
+          });
+
+          if (response.ok) {
+            const token = await response.text(); // Recebe o token como texto
+            if (token !== "login invalido") {
+              // Salva o token no localStorage (opcional)
+              localStorage.setItem("token", token);
+              window.location.href = "professor_home.html"; // Redireciona para a página do professor
+            } else {
+              alert("Credenciais inválidas. Tente novamente.");
+            }
+          } else {
+            alert("Erro no servidor. Tente novamente mais tarde.");
+          }
+        });
+    </script>
   </body>
 </html>

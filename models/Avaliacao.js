@@ -51,10 +51,9 @@ module.exports = class Avaliacao {
 
   async read() {
     const operacao = new Promise((resolve, reject) => {
-      const parametros = [];
       const sql =
-        "SELECT *, (notaApresentacao + notaRelevancia + notaConhecimento) / 3 AS notaGeral FROM avaliacao ORDER BY notaGeral DESC";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+        "SELECT avaliacao.idAvaliacao, avaliacao.trabalho_idTrabalho, avaliacao.notaApresentacao, avaliacao.notaRelevancia, avaliacao.notaConhecimento, avaliacao.melhorTrabalho, avaliacao.obs, trabalho.nomeTrabalho AS nomeTrabalho FROM avaliacao LEFT JOIN trabalho ON avaliacao.trabalho_idTrabalho = trabalho.idTrabalho ORDER BY avaliacao.idAvaliacao;";
+      this._banco.query(sql, [], function (erro, resultados) {
         if (erro) {
           console.log(erro);
           reject(erro);

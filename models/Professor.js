@@ -7,21 +7,70 @@ module.exports = class Professor {
     this._senha;
   }
 
-  async create() {
+  async login() {
     const operacao = new Promise((resolve, reject) => {
-      const nome = this._nome;
-      const registro = this._registro;
       const email = this._email;
       const senha = this._senha;
-      const parametros = [registro, nome, email, senha];
+
+      const parametros = [email, senha];
       const sql =
-        "insert into professor (registro, nome, email, senha) values (?, ?, ?, md5(?));";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+        "SELECT COUNT(*) AS qtd, registro, nome, email, senha FROM professor WHERE email = ? AND senha = md5(?)";
+      this._banco.query(sql, parametros, (erro, tuplas) => {
         if (erro) {
           console.log(erro);
           reject(erro);
         } else {
-          resolve(JSON.stringify(resultados));
+          if (tuplas[0].qtd > 0) {
+            const obj = {
+              status: true,
+              dados: {
+                registro: tuplas[0].registro,
+                nome: tuplas[0].nome,
+                email: tuplas[0].email,
+              },
+            };
+            resolve(obj);
+          } else {
+            resolve({ status: false });
+          }
+        }
+      });
+    });
+    return operacao;
+  }
+
+  async obterRegistroPorNome(nomeProfessor) {
+    const operacao = new Promise((resolve, reject) => {
+      const parametros = [nomeProfessor];
+      const sql = "SELECT registro FROM professor WHERE nome = ?";
+      this._banco.query(sql, parametros, (erro, resultados) => {
+        if (erro) {
+          console.log(erro);
+          reject(erro);
+        } else {
+          resolve(resultados.length > 0 ? resultados[0].registro : null);
+        }
+      });
+    });
+    return operacao;
+  }
+
+  async create() {
+    const operacao = new Promise((resolve, reject) => {
+      const registro = this._registro;
+      const nome = this._nome;
+      const email = this._email;
+      const senha = this._senha;
+
+      const parametros = [registro, nome, email, senha];
+      const sql =
+        "INSERT INTO professor (registro, nome, email, senha) VALUES (?, ?, ?, md5(?))";
+      this._banco.query(sql, parametros, (erro, tuplas) => {
+        if (erro) {
+          console.log(erro);
+          reject(erro);
+        } else {
+          resolve({ status: true });
         }
       });
     });
@@ -30,14 +79,13 @@ module.exports = class Professor {
 
   async read() {
     const operacao = new Promise((resolve, reject) => {
-      const parametros = [];
-      const sql = "select * from professor order by nome;";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+      const sql = "SELECT registro, nome, email FROM professor ORDER BY nome";
+      this._banco.query(sql, (erro, tuplas) => {
         if (erro) {
           console.log(erro);
           reject(erro);
         } else {
-          resolve(resultados);
+          resolve(tuplas);
         }
       });
     });
@@ -49,18 +97,15 @@ module.exports = class Professor {
       const registro = this._registro;
       const nome = this._nome;
       const email = this._email;
-      const senha = this._senha;
 
-      const parametros = [nome, email, senha, registro];
-      console.log(parametros);
-      const sql =
-        "update professor set nome = ?, email = ?, senha = ? where registro = ?";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+      const parametros = [nome, email, registro];
+      const sql = "UPDATE professor SET nome = ?, email = ? WHERE registro = ?";
+      this._banco.query(sql, parametros, (erro, tuplas) => {
         if (erro) {
           console.log(erro);
           reject(erro);
         } else {
-          resolve(resultados);
+          resolve({ status: true });
         }
       });
     });
@@ -70,15 +115,14 @@ module.exports = class Professor {
   async delete() {
     const operacao = new Promise((resolve, reject) => {
       const registro = this._registro;
-
       const parametros = [registro];
-      const sql = "delete from professor where registro = ?";
-      this._banco.query(sql, parametros, function (erro, resultados) {
+      const sql = "DELETE FROM professor WHERE registro = ?";
+      this._banco.query(sql, parametros, (erro, tuplas) => {
         if (erro) {
           console.log(erro);
           reject(erro);
         } else {
-          resolve(JSON.stringify(resultados));
+          resolve({ status: true });
         }
       });
     });
@@ -109,19 +153,19 @@ module.exports = class Professor {
     return this._nomeValue;
   }
 
-  set _email(value) {
-    this._emailValue = value;
+  set email(value) {
+    this._email = value;
   }
 
-  get _email() {
-    return this._emailValue;
+  get email() {
+    return this._email;
   }
 
-  set _senha(value) {
-    this._senhaValue = value;
+  set senha(value) {
+    this._senha = value;
   }
 
-  get _senha() {
-    return this._senhaValue;
+  get senha() {
+    return this._senha;
   }
 };

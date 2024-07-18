@@ -1,32 +1,46 @@
 const Aluno = require("../../models/Aluno");
 
-module.exports = function (request, response, banco) {
-  console.log("DELETE: /aluno");
+module.exports = async function (request, response, banco) {
+  console.log("DELETE /aluno");
   const p_matricula = request.params.matricula;
 
-  const aluno = new Aluno(banco);
-  aluno._matricula = p_matricula;
-  aluno
-    .delete()
-    .then(() => {
-      const resposta = {
+  if (!p_matricula) {
+    return response.status(400).send({
+      status: false,
+      msg: "Matrícula não fornecida",
+      codigo: "001",
+      dados: {},
+    });
+  }
+
+  try {
+    const aluno = new Aluno(banco);
+    aluno._matricula = p_matricula;
+
+    const deletado = await aluno.delete();
+
+    if (deletado) {
+      response.status(200).send({
         status: true,
-        msg: "Deletado com sucesso!!",
-        codigo: "004",
-        dados: {
-          matricula: p_matricula,
-        },
-      };
-      response.status(200).json(resposta);
-    })
-    .catch((erro) => {
-      console.error(erro);
-      const resposta = {
+        msg: "Aluno deletado com sucesso",
+        codigo: "002",
+        dados: {},
+      });
+    } else {
+      response.status(404).send({
         status: false,
-        msg: "Erro ao deletar!",
+        msg: "Aluno não encontrado",
         codigo: "003",
         dados: {},
-      };
-      response.status(500).json(resposta);
+      });
+    }
+  } catch (erro) {
+    console.log(erro);
+    response.status(500).send({
+      status: false,
+      msg: "Erro ao deletar o aluno",
+      codigo: "004",
+      dados: {},
     });
+  }
 };

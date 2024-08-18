@@ -14,22 +14,35 @@
             <h2>Cadastro de Projeto</h2>
           </div>
           <form id="cadastro-form">
-            <label for="nomeTrabalho">Nome:</label>
-            <input type="text" id="nomeTrabalho" name="nomeTrabalho" required /><br /><br />
-          
-            <label for="resumo">Resumo:</label>
-            <input type="text" id="resumo" name="resumo" required /><br /><br />
-          
-            <label for="nomeCurso">Curso:</label>
-            <input type="text" id="nomeCurso" name="nomeCurso" required /><br /><br />
-          
-            <label for="nomeProfessor">Professor:</label>
-            <input type="text" id="nomeProfessor" name="nomeProfessor" required /><br /><br />
-          
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nomeTrabalho">Nome:</label>
+                <input type="text" id="nomeTrabalho" name="nomeTrabalho" required />
+              </div>
+              <div class="form-group">
+                <label for="resumo">Resumo:</label>
+                <input type="text" id="resumo" name="resumo" required />
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nomeCurso">Curso:</label>
+                <input type="text" id="nomeCurso" name="nomeCurso" required />
+              </div>
+              <div class="form-group">
+                <label for="nomeProfessor">Professor:</label>
+                <input type="text" id="nomeProfessor" name="nomeProfessor" required />
+              </div>
+            </div>
+            
             <button type="submit">Cadastrar</button>
           </form>
           
-          <script>
+        <script>
+
+/*######################################################################################################*/
+
           document.querySelector("#cadastro-form").addEventListener("submit", async function (event) {
             event.preventDefault();
           
@@ -71,7 +84,11 @@
               alert("Erro ao cadastrar: " + error.message);
             }
           });
-          </script>
+
+/*######################################################################################################*/
+
+      </script>
+
       <div class="table-container">
         <h2>Lista de Projetos</h2>
         <table id="projetoTable">
@@ -91,6 +108,9 @@
       </div>
 
       <script>
+
+/*######################################################################################################*/
+
         async function fetchProjetos() {
           try {
             const response = await fetch("/trabalhos");
@@ -120,6 +140,8 @@
 
         // Chama a função para buscar e exibir os projetos quando a página carregar
         window.onload = fetchProjetos;
+
+/*######################################################################################################*/
       
         async function updateProjeto(idTrabalho) {
         const nomeTrabalho = prompt("Digite o novo nome:");
@@ -161,6 +183,8 @@
         }
       }
 
+/*######################################################################################################*/
+
       async function deleteProjeto(idTrabalho) {
         const response = await fetch(`/trabalho/${idTrabalho}`, {
           method: "DELETE",
@@ -173,6 +197,7 @@
         }
       }
 
+/*######################################################################################################*/
 
       </script>
 
@@ -186,7 +211,7 @@
       <nav class="menu" onmouseleave="closeMenu()">
         <ul>
           <li><a href="professor_home.html">HOME</a></li>
-          <li><a href="perfil.html">PERFIL</a></li>
+          <li><a href="perfil_professor.html">PERFIL</a></li>
           <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
           <li><a href="cadastraraluno.html">ALUNOS</a></li>
           <li><a href="avaliacao.html">AVALIAÇÃO</a></li>

@@ -2,19 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, max-scale=1.0" />
     <title>Cadastro de Alunos</title>
     <link rel="stylesheet" href="./css/cadastrostyle.css" />
   </head>
   <body>
     <div class="container">
-      <div class="upload-container">
-        <h1>Upload de Arquivo CSV</h1>
+      <div class="section">
+        <h2>Cadastro de Alunos</h2>
         <form id="uploadForm" enctype="multipart/form-data">
           <input type="file" name="csvFile" accept=".csv" required />
           <button type="submit">Enviar</button>
         </form>
       </div>
+
       <div class="table-container">
         <h2>Lista de Alunos</h2>
         <table id="alunosTable">
@@ -35,17 +36,24 @@
     </div>
 
     <script>
+
+/*######################################################################################################*/ 
+
       let alunos = [];
 
       async function fetchAlunos() {
         try {
           const response = await fetch("/alunos");
           alunos = await response.json();
+          alunos.sort((a, b) => (a.matricula > b.matricula ? 1 : -1));
+
           displayAlunos(alunos);
         } catch (error) {
           console.error("Erro ao buscar alunos:", error);
         }
       }
+
+/*######################################################################################################*/ 
 
       function displayAlunos(alunos) {
         const tableBody = document.querySelector("#alunosTable tbody");
@@ -68,10 +76,14 @@
         });
       }
 
+/*######################################################################################################*/ 
+
       function sortTable(key) {
         alunos.sort((a, b) => (a[key] > b[key] ? 1 : -1));
         displayAlunos(alunos);
       }
+
+/*######################################################################################################*/ 
 
       async function updateAluno(matricula) {
         const nome = prompt("Digite o novo nome:");
@@ -114,6 +126,8 @@
         }
       }
 
+/*######################################################################################################*/ 
+
       async function deleteAluno(matricula) {
         const response = await fetch(`/aluno/${matricula}`, {
           method: "DELETE",
@@ -125,6 +139,8 @@
           console.error("Erro ao deletar aluno:", response.statusText);
         }
       }
+
+/*######################################################################################################*/ 
 
       document
         .getElementById("uploadForm")
@@ -148,18 +164,13 @@
         });
 
       window.onload = fetchAlunos;
+
+/*######################################################################################################*/ 
+
     </script>
   </body>
 </html>
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./css/cadastrostyle.css" />
-    <title>Página Inicial</title>
-  </head>
   <body>
     <div
       class="menu-toggle"
@@ -171,7 +182,7 @@
     <nav class="menu" onmouseleave="closeMenu()">
       <ul>
         <li><a href="professor_home.html">HOME</a></li>
-        <li><a href="perfil.html">PERFIL</a></li>
+        <li><a href="perfil_professor.html">PERFIL</a></li>
         <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
         <li><a href="cadastraraluno.html">ALUNOS</a></li>
         <li><a href="avaliacao.html">AVALIAÇÃO</a></li>

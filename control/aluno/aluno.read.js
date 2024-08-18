@@ -1,7 +1,6 @@
 const Aluno = require("../../models/Aluno");
 const JWT = require("../../models/JWT");
 module.exports = function (request, response, banco) {
-  console.log("GET: /aluno");
   const aluno = new Aluno(banco);
   const auth = request.headers.authorization;
   console.log(auth);
@@ -13,7 +12,7 @@ module.exports = function (request, response, banco) {
       .then((respostaPromise) => {
         const resposta = {
           status: false,
-          msg: "Sucesso",
+          msg: "Sucesso!! :D",
           codigo: "002",
           dados: respostaPromise,
           token: jwt.gerar(validou.payload),
@@ -23,7 +22,7 @@ module.exports = function (request, response, banco) {
       .catch((erro) => {
         const resposta = {
           status: false,
-          msg: "Erro ao ler!",
+          msg: "Erro ao ler! :(",
           codigo: "003",
           dados: {},
         };

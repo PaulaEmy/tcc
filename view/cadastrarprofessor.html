@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="./css/cadastrostyle.css" />
   </head>
   <body>
-    <div class="upload-container">
-      <h1>Upload de Arquivo CSV</h1>
-      <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" name="csvFile" accept=".csv" required />
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
+
+    <div class="container">
+      <div class="section">
+        <h2>Cadastro de Professores</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input type="file" name="csvFile" accept=".csv" required />
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
 
     <div class="table-container">
       <h2>Lista de Professores</h2>
@@ -31,6 +33,9 @@
     </div>
 
     <script>
+
+/*######################################################################################################*/ 
+
       let professors = [];
 
       function sortTable(key) {
@@ -38,15 +43,20 @@
         displayProfessors(professors);
       }
 
+/*######################################################################################################*/ 
+
       async function fetchProfessors() {
         try {
           const response = await fetch("/professores");
           professors = await response.json();
+          professors.sort((a, b) => (a.registro > b.registro ? 1 : -1));
           displayProfessors(professors);
         } catch (error) {
           console.error("Erro ao buscar professores:", error);
         }
       }
+
+/*######################################################################################################*/ 
 
       function displayProfessors(professors) {
         const tableBody = document.querySelector("#professorTable tbody");
@@ -65,6 +75,8 @@
           tableBody.appendChild(row);
         });
       }
+
+/*######################################################################################################*/ 
 
       async function updateProfessor(registro) {
         const nome = prompt("Digite o novo nome:");
@@ -94,6 +106,8 @@
         }
       }
 
+/*######################################################################################################*/ 
+
       async function deleteProfessor(registro) {
         try {
           const response = await fetch(`/professor/${registro}`, {
@@ -109,6 +123,8 @@
           console.error("Erro ao deletar professor:", error);
         }
       }
+      
+/*######################################################################################################*/ 
 
       document
         .getElementById("uploadForm")
@@ -133,7 +149,11 @@
         });
 
       window.onload = fetchProfessors;
+            
+/*######################################################################################################*/ 
+
     </script>
+
   </body>
 </html>
 
@@ -154,7 +174,7 @@
     <nav class="menu" onmouseleave="closeMenu()">
       <ul>
         <li><a href="professor_home.html">HOME</a></li>
-        <li><a href="perfil.html">PERFIL</a></li>
+        <li><a href="perfil_professor.html">PERFIL</a></li>
         <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
         <li><a href="cadastraraluno.html">ALUNOS</a></li>
         <li><a href="avaliacao.html">AVALIAÇÃO</a></li>

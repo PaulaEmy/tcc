@@ -17,17 +17,18 @@ header {
   display: flex;
   justify-content: center;
   padding: 10px 0;
+  position: relative;
 }
 
 .navbar ul {
   list-style: none;
-  margin: 0;
+  margin: 10;
   padding: 0;
   display: flex;
 }
 
 .navbar li {
-  margin: 0 15px;
+  margin: 0 20px;
 }
 
 .navbar a {
@@ -40,14 +41,21 @@ header {
   text-decoration: underline;
 }
 
-/* Estilo para o conteúdo da página */
+.logo {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+}
+
 section {
   padding: 60px 20px;
-  margin-top: 50px; /* Ajuste para compensar a altura do menu fixo */
+  margin-top: 50px;
 }
 
 section h1 {
-  margin-top: 0;
+  margin-top: 10;
 }
 
 #home {
@@ -56,10 +64,6 @@ section h1 {
 
 #about {
   background-color: #e2e2e2;
-}
-
-#services {
-  background-color: #d0d0d0;
 }
 
 #contact {

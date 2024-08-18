@@ -22,7 +22,7 @@ module.exports = class Aluno {
       const parametros = [email, senha];
       //console.log(parametros);
       const sql =
-        "SELECT COUNT(*)as  qtd, matricula, nome, email, senha, nascimento, turma_idTurma, curso_idCurso FROM aluno  WHERE email= ? AND senha =md5(?)";
+        "SELECT COUNT(*)as qtd, matricula, nome, email, senha, nascimento, turma_idTurma, curso_idCurso FROM aluno  WHERE email= ? AND senha =md5(?)";
       this._banco.query(sql, parametros, (erro, tuplas) => {
         if (erro) {
           console.log(erro);
@@ -36,7 +36,7 @@ module.exports = class Aluno {
                 registro: tuplas[0].registro,
                 nome: tuplas[0].nome,
                 email: tuplas[0].email,
-                //senha:senha[0].senha,
+                senha: senha[0].senha,
                 nascimento: tuplas[0].nascimento,
                 turma: tuplas[0].turma,
               },
@@ -62,7 +62,7 @@ module.exports = class Aluno {
       const nome = this._nome;
       const email = this._email;
       const nascimento = this._nascimento;
-      const senha = this._senha;
+      const senha = this._matricula + this._nascimento.replaceAll("-", "");
       const turma = this._turma.idTurma;
       const curso = this._curso.idCurso;
       const parametros = [

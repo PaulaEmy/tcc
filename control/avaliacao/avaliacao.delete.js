@@ -1,6 +1,5 @@
 const Avaliacao = require("../../models/Avaliacao");
 module.exports = function (request, response, banco) {
-  console.log("DELETE: /avaliacao");
 
   const p_idAvaliacao = request.params.idAvaliacao;
 

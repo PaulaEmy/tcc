@@ -1,6 +1,5 @@
 const AlunoGrupo = require("../../models/AlunoGrupo");
 module.exports = function (request, response, banco) {
-  console.log("GET: /aluno_grupo");
   const alunogrupo = new AlunoGrupo(banco);
 
   alunogrupo

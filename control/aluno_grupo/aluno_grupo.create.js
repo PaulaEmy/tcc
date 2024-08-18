@@ -1,6 +1,5 @@
 const AlunoGrupo = require("../../models/AlunoGrupo");
 module.exports = function (request, response, banco) {
-  console.log("POST: /aluno_grupo");
   const p_matricula = request.body.matricula;
   const p_trabalho_idTrabalho = request.body.idTrabalho;
 

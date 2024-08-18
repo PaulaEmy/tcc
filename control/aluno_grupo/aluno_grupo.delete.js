@@ -1,7 +1,6 @@
 const AlunoGrupo = require("../../models/AlunoGrupo");
 
 module.exports = function (request, response, banco) {
-  console.log("DELETE: /aluno_grupo");
   const p_matricula = request.params.aluno_matricula;
 
   const alunogrupo = new AlunoGrupo(banco);

@@ -60,7 +60,7 @@ module.exports = class Professor {
       const registro = this._registro;
       const nome = this._nome;
       const email = this._email;
-      const senha = this._senha;
+      const senha = this._registro;
 
       const parametros = [registro, nome, email, senha];
       const sql =

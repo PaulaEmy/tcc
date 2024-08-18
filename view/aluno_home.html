@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/alunohomestyle.css" />
+    <title>Página Inicial</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <ul>
+          <li><a href="professor_home.html">HOME</a></li>
+          <li><a href="perfil.html">PERFIL</a></li>
+          <li><a href="avaliacao_aluno.html">AVALIAÇÃO</a></li>
+          <li><a href="index.html">LOGOUT</a></li>
+        </ul>
+      </nav>
+    </header>
+  </body>
+</html>
+<section id="home">
+  <h1>Bem-vindo à Home</h1>
+</section>
+<div class="table-container">
+  <h2>Seu(s) Projeto(s)</h2>
+  <table id="projetoTable">
+    <thead>
+      <tr>
+        <th>Registro</th>
+        <th>Nome</th>
+        <th>Resumo</th>
+        <th>Curso</th>
+        <th>Professor</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<section id="contact">
+  <h1>Contato</h1>
+  <p>Email - avaliacaoprojetoft@gmail.com</p>
+</section>
+<script>
+  const dados = localStorage.getItem("dados");
+  const objetoDados = JSON.parse(dados);
+  const MATRICULA = objetoDados.matricula;
+
+  async function fetchProjetos() {
+    try {
+      const response = await fetch("/trabalhos");
+      const trabalhos = await response.json();
+
+      const tableBody = document.querySelector("#projetoTable tbody");
+      tableBody.innerHTML = ""; // Limpa o conteúdo anterior
+      trabalhos.forEach((trabalho) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                <td>${trabalho.idTrabalho}</td>
+                <td>${trabalho.nomeTrabalho}</td>
+                <td>${trabalho.resumo}</td>
+                <td>${trabalho.nomeCurso}</td>
+                <td>${trabalho.nome}</td>
+                <td>
+        <button onclick="updateProjeto(${trabalho.idTrabalho})">Atualizar</button>
+        <button onclick="deleteProjeto(${trabalho.idTrabalho})">Deletar</button>
+      </td>
+            `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Erro ao buscar projetos:", error);
+    }
+  }
+
+  // Chama a função para buscar e exibir os projetos quando a página carregar
+  window.onload = fetchProjetos;
+  let menuTimeout;
+
+  function toggleMenu() {
+    const menu = document.querySelector(".menu");
+    menu.classList.toggle("open");
+  }
+
+  function closeMenu() {
+    const menu = document.querySelector(".menu");
+    menuTimeout = setTimeout(() => {
+      menu.classList.remove("open");
+    }, 500); // Tempo de espera em milissegundos (500ms) antes de recuar o menu
+  }
+
+  function cancelCloseMenu() {
+    clearTimeout(menuTimeout);
+  }
+</script>

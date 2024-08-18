@@ -1,6 +1,5 @@
 const Avaliacao = require("../../models/Avaliacao");
 module.exports = function (request, response, banco) {
-  console.log("PUT: /avaliacao");
   const p_idAvaliacao = request.params.idAvaliacao;
   const p_notaApresentacao = request.body.notaApresentacao;
   const p_notaRelevancia = request.body.notaRelevancia;

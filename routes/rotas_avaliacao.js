@@ -6,75 +6,51 @@ const controle_update = require("../control/avaliacao/avaliacao.update");
 const controle_delete = require("../control/avaliacao/avaliacao.delete");
 const jwt = require("jsonwebtoken");
 
-// Função para decodificar o JWT
-function parseJwt(token) {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  const jsonPayload = decodeURIComponent(
-    Buffer.from(base64, "base64")
-      .toString("binary")
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
-  );
-
-  return JSON.parse(jsonPayload);
-}
-
 module.exports = function (app, banco) {
+  /*######################################################################################################*/
+  app.get("/avaliacoes", async (request, response) => {
+    try {
+      const avaliacaoModel = new Avaliacao(banco);
+      const avaliacao = await avaliacaoModel.read();
+      response.json(avaliacao);
+    } catch (error) {
+      console.error("Erro ao obter avaliação:", error);
+      response.status(500).json({ error: "Erro ao obter avaliação" });
+    }
+  });
+  /*######################################################################################################*/
   app.post("/avaliacao", (request, response) => {
     controle_create(request, response, banco);
   });
+  /*######################################################################################################*/
   app.get("/avaliacao", (request, response) => {
     controle_read(request, response, banco);
   });
+  /*######################################################################################################*/
   app.put("/avaliacao/:idAvaliacao", (request, response) => {
-    const { idAvaliacao } = request.params;
-    const {
-      nomeTrabalho,
-      apresentacao,
-      relevancia,
-      conhecimento,
-      melhorTrabalho,
-      obs,
-    } = request.body;
-
-    const sql =
-      "UPDATE Avaliacao SET nomeTrabalho = ?, apresentacao = ?, relevancia = ?, conhecimento = ?, melhorTrabalho = ?, obs = ? WHERE idAvaliacao = ?";
-    const values = [
-      nomeTrabalho,
-      apresentacao,
-      relevancia,
-      conhecimento,
-      melhorTrabalho,
-      obs,
-      idAvaliacao,
-    ];
-
-    banco.run(sql, values, function (err) {
+    console.log(`PUT: /avaliacao/${request.params.idAvaliacao}`);
+    controle_update(request, response, banco);
+  });
+  /*######################################################################################################*/
+  app.delete("/avaliacao", (request, response) => {
+    const sql = "DELETE FROM Avaliacao";
+    banco.query(sql, (err, result) => {
       if (err) {
-        console.error(err.message);
-        response.status(500).send("Erro ao atualizar avaliação.");
+        console.error("Erro ao deletar todas as avaliações:", err);
+        response.status(500).send("Erro ao deletar todas as avaliações.");
       } else {
-        response.status(200).send("Avaliação atualizada com sucesso.");
+        console.log("Todas as avaliações foram deletadas.");
+        response.status(200).send("Todas as avaliações foram deletadas.");
       }
     });
   });
+  /*######################################################################################################*/
   app.delete("/avaliacao/:idAvaliacao", (request, response) => {
-    const { idAvaliacao } = request.params;
-    const sql = "DELETE FROM Avaliacao WHERE idAvaliacao = ?";
-
-    banco.run(sql, [idAvaliacao], function (err) {
-      if (err) {
-        console.error(err.message);
-        response.status(500).send("Erro ao deletar avaliação.");
-      } else {
-        response.status(200).send("Avaliação deletada com sucesso.");
-      }
-    });
+    controle_delete(request, response, banco);
+    const p_idAvaliacao = request.params.idAvaliacao;
+    console.log(`DELETE: /avaliacao/${p_idAvaliacao}`);
   });
+  /*######################################################################################################*/
   app.get("/avaliacao", (request, response) => {
     const sql = "SELECT * FROM Avaliacao";
     banco.all(sql, [], (err, rows) => {
@@ -86,6 +62,7 @@ module.exports = function (app, banco) {
       }
     });
   });
+  /*######################################################################################################*/
   app.get("/trabalho", async (req, res) => {
     const nomeTrabalho = req.query.nomeTrabalho;
     const sql = "SELECT idTrabalho FROM trabalho WHERE nomeTrabalho = ?";
@@ -99,4 +76,5 @@ module.exports = function (app, banco) {
       res.json(resultados[0]);
     });
   });
+  /*######################################################################################################*/
 };

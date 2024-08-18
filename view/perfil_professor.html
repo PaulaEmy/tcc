@@ -9,7 +9,6 @@
   <body>
     <header>
       <nav class="navbar">
-        <img src="imagens/univap-logo.png" alt="Logo" class="logo" />
         <ul>
           <li><a href="professor_home.html">HOME</a></li>
           <li><a href="perfil_professor.html">PERFIL</a></li>
@@ -21,28 +20,11 @@
         </ul>
       </nav>
     </header>
-    <section id="home">
-      <h1>Bem-vindo à Home</h1>
-    </section>
-
-    <section id="about">
-      <h1>Sobre</h1>
-      <p>
-        Este é um site criado por alunos da UNIVAP que tem o intuito de
-        facilitar a avaliação de projetos para professores.
-      </p>
-    </section>
-
-    <section id="contact">
-      <h1>Contato</h1>
-      <p>Email - avaliacaoprojetoft@gmail.com</p>
-    </section>
   </body>
 </html>
 
 <script>
   const dados = localStorage.getItem("dados");
-  console.log(dados);
   const objetoDados = JSON.parse(dados);
-  //alert(objetoDados.registro);
+  const REGISTRO = objetoDados.registro;
 </script>

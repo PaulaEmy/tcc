@@ -4,7 +4,6 @@ const Curso = require("../../models/Cursos");
 const JWT = require("../../models/JWT");
 
 module.exports = async function (request, response, banco) {
-  console.log("POST: /aluno");
   const auth = request.headers.authorization;
   console.log(auth);
   const jwt = new JWT();
@@ -29,7 +28,7 @@ module.exports = async function (request, response, banco) {
     ) {
       const resposta = {
         status: false,
-        msg: "Por favor preencha todos os campos",
+        msg: "Por favor preencha todos os campos!!",
         codigo: "001",
         dados: {},
       };
@@ -47,11 +46,11 @@ module.exports = async function (request, response, banco) {
 
       console.log(idTurma);
       if (!idTurma) {
-        throw new Error("Turma não encontrada");
+        throw new Error("Turma não encontrada :(");
       }
 
       if (!idCurso) {
-        throw new Error("Curso não encontrada");
+        throw new Error("Curso não encontrada :(");
       }
       // Criando objeto Aluno com os IDs da turma e do curso obtidos
       const aluno = new Aluno(banco);

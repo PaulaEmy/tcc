@@ -3,7 +3,6 @@ const Curso = require("../../models/Cursos");
 const Turma = require("../../models/Turma");
 
 module.exports = async function (request, response, banco) {
-  console.log("PUT: /aluno");
   const p_matricula = request.params.matricula;
   const p_nome = request.body.nomeAluno;
   const p_email = request.body.email;
@@ -29,7 +28,7 @@ module.exports = async function (request, response, banco) {
   ) {
     const resposta = {
       status: false,
-      msg: "Por favor preencha todos os campos",
+      msg: "Por favor preencha todos os campos :/",
       codigo: "001",
       dados: {},
     };
@@ -44,7 +43,7 @@ module.exports = async function (request, response, banco) {
       if (idTurma === null || idCurso === null) {
         const resposta = {
           status: false,
-          msg: "Turma ou Curso não encontrado",
+          msg: "Turma ou Curso não encontrado :/",
           codigo: "004",
           dados: {},
         };
@@ -67,7 +66,7 @@ module.exports = async function (request, response, banco) {
 
       const resposta = {
         status: true,
-        msg: "Atualizado com sucesso!!",
+        msg: "Atualizado com sucesso!! ;D",
         codigo: "002",
         dados: {
           nome: p_nome,
@@ -83,7 +82,7 @@ module.exports = async function (request, response, banco) {
       console.log(erro);
       const resposta = {
         status: false,
-        msg: "Erro ao atualizar!",
+        msg: "Erro ao atualizar! D:",
         codigo: "003",
         dados: {},
       };

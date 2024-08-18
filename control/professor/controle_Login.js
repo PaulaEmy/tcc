@@ -15,9 +15,20 @@ module.exports = function (request, response, banco) {
       if (resposta.status == true) {
         const jwt = new JWT();
         const token = jwt.gerar(resposta.dados); // Captura o token gerado
-        response.status(200).send(token); // Envia o token na resposta
+        const resposta2 = {
+          status: true,
+          registro: resposta.dados.registro,
+          nome: resposta.dados.nome,
+          email: resposta.dados.email,
+          token: token,
+        };
+        response.status(200).send(resposta2); // Envia o token na resposta
       } else {
-        response.status(200).send("login invalido");
+        const resposta2 = {
+          status: false,
+          msg: "Login inválido",
+        };
+        response.status(200).send(resposta2);
       }
     })
     .catch((error) => {

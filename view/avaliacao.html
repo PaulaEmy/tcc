@@ -14,8 +14,8 @@
             <h2>Avaliação de Projetos</h2>
           </div>
           <form id="cadastro-form">
-            <label for="nomeTrabalho">Trabalho:</label>
-            <input type="text" id="nomeTrabalho" name="nomeTrabalho" required /><br /><br />
+            <label for="idTrabalho">Trabalho:</label>
+            <input type="number" id="idTrabalho" name="idTrabalho" required /><br /><br />
           
             <label for="apresentacao">Nota de Apresentação:</label>
             <input type="number" min="0" max="10" id="apresentacao" name="apresentacao" required><br><br>
@@ -38,54 +38,70 @@
           
             <button type="submit">Cadastrar</button>
           </form>
+
+          <div class="button-container">
+            <button onclick="deleteAllAvaliacoes()">Deletar Todas as Avaliações</button>
+          </div>
+
+          <div class="table-container">
+            <h2>Lista de Avaliações</h2>
+            <table id="avaliacaoTable">
+              <thead>
+                <tr>
+              <th onclick="sortTable('idAvaliacao')">Registro</th>
+              <th onclick="sortTable('nomeTrabalho')">Trabalho</th>
+              <th onclick="sortTable('notaApresentacao')">Apresentação</th>
+              <th onclick="sortTable('notaRelevancia')">Relevância</th>
+              <th onclick="sortTable('notaConhecimento')">Conhecimento</th>
+              <th onclick="sortTable('obs')">OBS</th>
+              <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
           
           <script>
 
-          function parseJwt(token) {
-            const base64Url = token.split(".")[1];
-            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-            const jsonPayload = decodeURIComponent(atob(base64).split("").map(function(c) {
-              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(""));
+/*######################################################################################################*/
 
-            return JSON.parse(jsonPayload);
-          }
+          const dados = localStorage.getItem("dados");
+          const objetoDados = JSON.parse(dados);
+          const REGISTRO = objetoDados.registro;
 
           document.querySelector("#cadastro-form").addEventListener("submit", async function (event) {
-            event.preventDefault();
+          event.preventDefault();
           
-            const nomeTrabalho = document.querySelector("#nomeTrabalho").value;
+            const idTrabalho = document.querySelector("#idTrabalho").value;
             const notaApresentacao = document.querySelector("#apresentacao").value;
             const notaRelevancia = document.querySelector("#relevancia").value;
             const notaConhecimento = document.querySelector("#conhecimento").value;
             const melhorTrabalho = document.querySelector('input[name="melhorTrabalho"]:checked').value;
             const obs = document.querySelector("#obs").value;
 
-            const token = localStorage.getItem("token");
-            const professorData = parseJwt(token);
           
-            if (!nomeTrabalho || !notaApresentacao || !notaRelevancia || !notaConhecimento || !melhorTrabalho || !obs) {
+            if (!idTrabalho || !notaApresentacao || !notaRelevancia || !notaConhecimento || !melhorTrabalho || !obs) {
               alert("Por favor, preencha todos os campos antes de enviar o formulário.");
               return;
             }
 
             const data = {
-              nomeTrabalho,
+              idTrabalho,
+              REGISTRO,
               notaApresentacao,
               notaRelevancia,
               notaConhecimento,
               melhorTrabalho,
               obs,
-              registroProfessor: professorData.registro
             };
-          
+              console.log(data);
             try {
               const response = await fetch("/avaliacao", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data),
+                body:JSON.stringify(data)
               });
           
               if (response.ok) {
@@ -96,42 +112,25 @@
                 alert("Erro ao cadastrar: " + response.statusText);
               }
             } catch (error) {
-              console.error("Erro:", error);
+              console.log("Erro:", error);
               alert("Erro ao cadastrar: " + error.message);
             }
           });
-          </script>
-      <div class="table-container">
-        <h2>Lista de Avaliações</h2>
-        <table id="avaliacaoTable">
-          <thead>
-            <tr>
-              <th>Registro</th>
-              <th>Nome</th>
-              <th>Resumo</th>
-              <th>Curso</th>
-              <th>Professor</th>
-              <th>Ações</th>
 
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+/*######################################################################################################*/
 
-      <script>
-        async function fetchAvaliacao() {
-            try {
-              const response = await fetch("/avaliacao");
-              const avaliacao = await response.json();
+          async function fetchAvaliacao() {
+          try {
+            const response = await fetch("/avaliacoes");
+            const avaliacoes = await response.json();
 
-              const tableBody = document.querySelector("#avaliacaoTable tbody");
-              tableBody.innerHTML = ""; // Limpa o conteúdo anterior
-              avaliacao.forEach((avaliacao) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
+            const tableBody = document.querySelector("#avaliacaoTable tbody");
+            tableBody.innerHTML = ""; 
+            avaliacoes.forEach((avaliacao) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
                   <td>${avaliacao.idAvaliacao}</td>
-                  <td>${avaliacao.nomeTrabalho}</td>                  
+                  <td>${avaliacao.nomeTrabalho}</td>
                   <td>${avaliacao.notaApresentacao}</td>
                   <td>${avaliacao.notaRelevancia}</td>
                   <td>${avaliacao.notaConhecimento}</td>
@@ -141,54 +140,59 @@
                     <button onclick="deleteAvaliacao(${avaliacao.idAvaliacao})">Deletar</button>
                   </td>
                 `;
-                tableBody.appendChild(row);
-              });
-            } catch (error) {
-              console.error("Erro ao buscar avaliações:", error);
-            }
+              tableBody.appendChild(row);
+            });
+          } catch (error) {
+            console.error("Erro ao buscar avaliações:", error);
           }
+        }
 
-          window.onload = fetchAvaliacao;
-      
-          async function updateAvaliacao(idAvaliacao) {
-            const nomeTrabalho = document.querySelector("#updateNomeTrabalho").value;
-            const notaApresentacao = document.querySelector("#updateApresentacao").value;
-            const notaRelevancia = document.querySelector("#updateRelevancia").value;
-            const notaConhecimento = document.querySelector("#updateConhecimento").value;
-            const obs = document.querySelector("#updateObs").value;
+        window.onload = fetchAvaliacao;
 
-            if (!nomeTrabalho || !notaApresentacao || !notaRelevancia || !notaConhecimento || !obs) {
-              alert("Todos os campos são obrigatórios!");
-              return;
-            }
+/*######################################################################################################*/
 
-            const data = {
-              nomeTrabalho,
-              notaApresentacao,
-              notaRelevancia,
-              notaConhecimento,
-              
-              obs
-            };
+    async function updateAvaliacao(idAvaliacao) {
+        const Apresentacao = prompt("Digite a nova nota de apresentação:");
+        const Relevancia = prompt("Digite a nova nota de relevância:");
+        const conhecimento = prompt("Digite a nova nota de conhecimento:");
+        const obs = prompt("Observações: ");
 
-            try {
-              const response = await fetch(`/avaliacao/${idAvaliacao}`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-              });
 
-              if (response.ok) {
-                fetchAvaliacao();
-              } else {
-                console.error("Erro ao atualizar avaliação:", response.statusText);
-              }
-            } catch (error) {
-              console.error("Erro ao atualizar avaliação:", error);
-            }
+        if (!Apresentacao || !Relevancia || !conhecimento ) {
+          alert("Todos os campos são obrigatórios!");
+          return;
+        }
+
+        const data = {
+          notaApresentacao: Apresentacao,
+          notaRelevancia: Relevancia,
+          notaConhecimento: conhecimento,
+          obs: obs,
+       
+        };
+
+
+        try {
+          const response = await fetch(`/avaliacao/${idAvaliacao}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            fetchAvaliacao();
+          } else {
+            console.error("Erro ao atualizar avaliação:", response.statusText);
           }
+        } catch (error) {
+          console.error("Erro ao atualizar avaliação:", error);
+        }
+      }
+
+
+/*######################################################################################################*/
 
       async function deleteAvaliacao(idAvaliacao) {
         const response = await fetch(`/avaliacao/${idAvaliacao}`, {
@@ -202,6 +206,28 @@
         }
       }
 
+/*######################################################################################################*/ 
+
+      async function deleteAllAvaliacoes() {
+        if (confirm("Tem certeza que deseja deletar todas as avaliações?")) {
+              try {
+                const response = await fetch("/avaliacao", {
+                  method: "DELETE",
+                });
+
+                if (response.ok) {
+                  alert("Todas as avaliações foram deletadas com sucesso.");
+                  fetchAvaliacao(); 
+                } else {
+                  alert("Erro ao deletar todas as avaliações: " + response.statusText);
+                }
+              } catch (error) {
+                console.error("Erro ao deletar todas as avaliações:", error);
+              }
+            }
+      }
+
+/*######################################################################################################*/
 
       </script>
 
@@ -215,7 +241,7 @@
       <nav class="menu" onmouseleave="closeMenu()">
         <ul>
           <li><a href="professor_home.html">HOME</a></li>
-          <li><a href="perfil.html">PERFIL</a></li>
+          <li><a href="perfil_professor.html">PERFIL</a></li>
           <li><a href="cadastrarprofessor.html">PROFESSORES</a></li>
           <li><a href="cadastraraluno.html">ALUNOS</a></li>
           <li><a href="avaliacao.html">AVALIAÇÃO</a></li>

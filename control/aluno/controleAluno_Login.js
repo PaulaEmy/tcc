@@ -14,10 +14,21 @@ module.exports = function (request, response, banco) {
     .then((resposta) => {
       if (resposta.status == true) {
         const jwt = new JWT();
-        const token = jwt.gerar(resposta.dados); // Captura o token gerado
-        response.status(200).send(token); // Envia o token na resposta
+        const token = jwt.gerar(resposta.dados);
+        const resposta2 = {
+          status: true,
+          matricula: resposta.dados.matricula,
+          nome: resposta.dados.nome,
+          email: resposta.dados.email,
+          token: token,
+        };
+        response.status(200).send(resposta2);
       } else {
-        response.status(200).send("login invalido");
+        const resposta2 = {
+          status: false,
+          msg: "Login inválido",
+        };
+        response.status(200).send(resposta2);
       }
     })
     .catch((error) => {

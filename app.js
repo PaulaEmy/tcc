@@ -73,6 +73,7 @@ app.post("/upload/professor", upload.single("csvFile"), async (req, res) => {
       registro: valores[0],
       nome: valores[1],
       email: valores[2],
+      senha: valores[3],
     });
   }
 
@@ -81,10 +82,11 @@ app.post("/upload/professor", upload.single("csvFile"), async (req, res) => {
     const registro = professoresDiferentes[i].registro;
     const nome = professoresDiferentes[i].nome;
     const email = professoresDiferentes[i].email;
+    const senha = "UNIVAP2024";
 
     await upsert(
-      "INSERT INTO professor (registro, nome, email) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email)",
-      [registro, nome, email]
+      "INSERT INTO professor (registro, nome, email, senha) VALUES (?, ?, ?, md5(?)) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email)",
+      [registro, nome, email, senha]
     );
   }
 
@@ -125,6 +127,7 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
       nome: valores[1],
       email: valores[2],
       nascimento: valores[3],
+      senha: "UNIVAP2024",
       turma: valores[4].trim(),
       curso: valores[5].trim(),
     });
@@ -198,10 +201,11 @@ app.post("/upload/alunos", upload.single("csvFile"), async (req, res) => {
     const nome = alunosDiferentes[i].nome;
     const email = alunosDiferentes[i].email;
     const nascimento = alunosDiferentes[i].nascimento;
+    const senha = "UNIVAP2024";
 
     await upsert(
-      "INSERT INTO aluno (matricula, nome, email, nascimento, turma_idTurma, curso_idCurso) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email), nascimento = VALUES(nascimento), turma_idTurma = VALUES(turma_idTurma), curso_idCurso = VALUES(curso_idCurso)",
-      [matricula, nome, email, nascimento, idTurma, idCurso]
+      "INSERT INTO aluno (matricula, nome, email, nascimento, senha, turma_idTurma, curso_idCurso) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nome = VALUES(nome), email = VALUES(email), nascimento = VALUES(nascimento), turma_idTurma = VALUES(turma_idTurma), curso_idCurso = VALUES(curso_idCurso)",
+      [matricula, nome, email, nascimento, senha, idTurma, idCurso]
     );
   }
 

@@ -1,7 +1,5 @@
 const Avaliacao = require("../../models/Avaliacao");
 module.exports = function (request, response, banco) {
-  console.log("GET: /avaliacao");
-
   const avaliacao = new Avaliacao(banco);
 
   avaliacao

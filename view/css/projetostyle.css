@@ -61,7 +61,7 @@ body {
 }
 
 .form-container {
-  margin: 20px;
+  margin: 10px;
   background-color: white;
   padding: 30px;
   border-radius: 10px;
@@ -83,17 +83,38 @@ h2 {
   text-align: center;
 }
 
-form {
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  width: 48%; /* Ajuste para ocupar metade da linha */
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.form-group input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
 button {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
   background-color: #173f73;
   color: #fff;
   border: none;
-  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
